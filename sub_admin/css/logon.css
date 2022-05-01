@@ -1,0 +1,134 @@
+html,
+body {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	background-color: #F0F0F0; 
+}
+
+.layout-main {
+	width: 300px;
+	height: auto;
+	margin: auto;
+	margin-top: 15%;
+	padding: 50px;
+	background-color: #FFFFFF;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	border-radius: 5px;
+}
+
+.layout-title {
+	font-weight: 300;
+	font-size: 30px;
+	color: #000;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.layout-explain {
+	font-weight: 300;
+	color: #999;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.layout-explain::before,
+.layout-explain::after {
+	content: "";
+	width: 20%;
+	height: 1px;
+	display: inline-block;
+	margin-top: 1px;
+	vertical-align: super;
+	background-color: #e5e5e5;
+	margin: 0 10px;
+}
+
+.layout-copyright {
+	position: absolute;
+	bottom: 10px;
+	left: 0;
+	right: 0;
+	color: #999999;
+	text-align: center;
+	margin: auto;
+}
+
+.layui-form-label {
+	border: none !important;
+	width: 50px !important;
+}
+
+.layui-input {
+	border: none !important;
+	background-color: #f1f0f0;
+}
+
+.layui-form-item {
+	background-color: #FFFFFF;
+	/* border: 1px solid #e6e6e6; */
+	border: none;
+}
+.layui-btn-normal {
+	background-color: #33cabb;
+}
+.layui-form-pane .layui-input-block {
+	margin-left: 50px !important;
+}
+
+.register {
+	color: #666;
+}
+
+.register:hover {
+	opacity: 0.5;
+	cursor: pointer;
+}
+
+.slider-item {
+	height: 36px !important;
+}
+
+.layui-bg-green {
+	background-color: #1E9FFF !important;
+}
+
+.nob {
+	border: none;
+}
+
+.extend {
+	text-align: center;
+}
+
+input[name=captcha] {
+	width: 120px;
+	display: inline-block;
+}
+
+#captcha_img {
+	border: 1px solid #F0F0F0;
+	height: 36px;
+	float: right;
+	cursor: pointer;
+}
+@media screen and (max-width: 500px) {
+	body {
+		background-color: #FFFFFF;
+	}
+	.layout-main {
+		width: auto;
+		height: auto;
+	}
+	input[name=captcha] {
+		width: 45%;
+	}
+	.layout-copyright {
+		color: #666666;
+	}
+}
