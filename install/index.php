@@ -340,7 +340,7 @@ function deldir()
                                                                 <div class="col-md-9">
                                                                     <input type="text" id="versions" name="versions"
                                                                            class="form-control" lay-verify="required"
-                                                                           value="V 1.1"
+                                                                           value="V 1.2"
                                                                            readonly>
                                                                 </div>
                                                             </div>

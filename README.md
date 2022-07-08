@@ -1,15 +1,45 @@
-# ccproxy_kami
+# 一花CCPROXY 安装教程
 
-ccproxy卡密管理系统 生成卡密 激活 用户在线管理 socket 通讯 
+## 一、上传到服务器
 
-# 程序安装教程
+教程用的是bt.cn面板，所以这里就不讲bt的安装了，需要的去bt.cn自己查看教程，
 
-1.上传程序后，打开根目录下的config.php 文件 修改里面的数据库连接
+首先下载源码一定要下载最新版本的！
 
-2.找到根目录下的ccpy.sql 数据库文件 ，导入数据库后 修改 表名为 sub_admin 下的siteurl 的字段为自己的域名 不包括 http：// 和 /
+![image-20220709000828688](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709000828688.png)
 
-3.后台 sub_admin 初始化 用户名为 admin 123456 
+![image-20220709000930807](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709000930807.png)
 
-4.超级后台为 sup_admin 目前没有开发  
+然后打开我们的bt面板，看图操作：
 
-5.程序可能有许多bug ，希望大家多多支持，留下点个 star吧 谢谢啦！！！！！
+1.
+
+![image-20220709001138309](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709001138309.png)
+
+2.
+
+![image-20220709001555015](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709001555015.png)
+
+3.点提交后
+
+![image-20220709001700944](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709001700944.png)
+
+4.
+
+![image-20220709001800402](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709001800402.png)
+
+5.上传并解压文件到网站根目录
+
+![image-20220709001836794](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709001836794.png)
+
+6.接下来 域名/install 进入安装程序，直接访问网站也会有提示
+
+![image-20220709002007267](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709002007267.png)
+
+![image-20220709002237129](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709002237129.png)
+
+![image-20220709002258564](C:\Users\LIUQIANG\AppData\Roaming\Typora\typora-user-images\image-20220709002258564.png)
+
+**注意如果这里失败了请检查你的数据库账号密码，数据库执行失败是你已经安装过了，所以删除原来的数据库就可以了。**
+
+7.到这里就结束了，点击确定会跳转到成功页面，有提示的默认账号密码和后台地址，接下来你就可以使用啦！
