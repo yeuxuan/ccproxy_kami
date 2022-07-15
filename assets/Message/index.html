@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message.js</title>
+    <link rel="stylesheet" href="./css/message.css">
+</head>
+<body>
+    <style>
+        .box{
+            margin-top: 300px;
+            text-align: center;
+        }
+    </style>
+    <div class="box">
+        <div class="types">
+            <button class="btn" data-type='info'>info提示</button>
+            <button class="btn" data-type='error'>error提示</button>
+            <button class="btn" data-type='success'>success提示</button>
+            <button class="btn" data-type='warning'>warning提示</button>
+            <button class="btn" data-type='loading'>loading提示,需要手动关闭</button>
+        </div>
+        <div class="settings" style="margin-top: 50px;">
+            <button class="show-close">显示关闭按钮</button>
+            <button class="hide-close">不显示关闭按钮</button>
+            <button class="close-all">立即关闭全部</button>
+        </div>
+        <div class="settings" style="margin-top: 50px;">
+            <button class="create-loading">创建一个loading</button>
+            <button class="close-loading">关闭这个loading</button>
+        </div>
+        <div class="position" style="margin-top: 50px;">
+            <button class="set-position" data-position="left">左边显示</button>
+            <button class="set-position" data-position="center">中间显示</button>
+            <button class="set-position" data-position="right">右边显示</button>
+            <button class="set-alone">单独的右边</button>
+        </div>
+    </div>
+    <script src="./js/message.min.js"></script>
+    <script>
+        var $types = document.querySelector(".types");
+        var btns = $types.querySelectorAll(".btn");
+        for(var i =0,btn;btn=btns[i];i++){
+            btn.addEventListener("click",function(e){
+                var type = this.getAttribute("data-type");
+                var txt = this.innerText;
+                Qmsg[type](txt);
+            })
+        }
+
+        var $position = document.querySelector(".position");
+        var $pos = $position.querySelectorAll(".set-position");
+        for(var i =0,botn;botn=$pos[i];i++){
+            botn.addEventListener("click",function(e){
+                var position = this.getAttribute("data-position");
+                var txt = this.innerText;
+                Qmsg.config({
+                    position:position
+                })
+                Qmsg.info('我来自 <i style="color:red">'+txt+'</i>',{
+                    html:true
+                })
+            })
+        }
+
+        document.querySelector(".set-alone").onclick = function(){
+            Qmsg.success('<i style="color:red">风萧萧兮易水寒</i>',{
+                    html:true,
+                    position:'right'
+                })
+        }
+
+        document.querySelector(".show-close").onclick = function(){
+            Qmsg.config({
+                showClose:true
+            })
+            Qmsg.warning('设置 <i style="color:green">showClose</i> = <i style="color:red">true</i>',{
+                html:true
+            })
+        }
+        document.querySelector(".hide-close").onclick = function(){
+            Qmsg.config({
+                showClose:false
+            })
+            Qmsg.warning('设置 <i style="color:green">showClose</i> = <i style="color:gray">false</i>',{
+                html:true
+            })
+        }
+        document.querySelector(".close-all").onclick = function(){
+            Qmsg.closeAll();
+        }
+        var loading;
+        document.querySelector(".create-loading").onclick = function(){
+            loading = Qmsg.loading("小鸭子,游呀游~",{
+                onClose:function(){
+                    console.log("游上了岸~")
+                }
+            });
+        }
+        document.querySelector(".close-loading").onclick = function(){
+            loading && loading.close();
+        }
+    </script>
+</body>
+</html>
