@@ -2,7 +2,7 @@
 /*
  * @Author: yihua
  * @Date: 2022-02-16 00:22:38
- * @LastEditTime: 2022-07-08 09:56:17
+ * @LastEditTime: 2022-07-16 13:42:18
  * @LastEditors: yihua
  * @Description: 
  * @FilePath: \ccpy\api\cpproxy.php
@@ -368,13 +368,13 @@ function del()
 function update($proxyaddress,$admin_username,$admin_password,$admin_port,$day,$date)
 {
     if (!CheckStrChinese($admin_username)) {
-        return ["code" => "用户名不合法", "icon" => "5"];
+        return ["code" => "-1", "msg"=>"用户名不合法", "icon" => "5"];
     } 
     if (strlen($admin_username)<5) {
-        return ["code" => "用户名长度不合法", "icon" => "5"];
+        return ["code" => "-1", "msg"=>"用户名长度不合法", "icon" => "5"];
     } 
     if(!CheckStrPwd($admin_password)){
-        return ["code" => "密码不合法", "icon" => "5"];
+        return ["code" => "-1", "msg"=>"密码不合法", "icon" => "5"];
     }
     $post = ["user"];
     $is = true;
