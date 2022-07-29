@@ -1,0 +1,165 @@
+.layui-form-item .layui-input-inline {
+	width: 150px;
+	margin-bottom: 5px;
+}
+
+.layui-form-item {
+	white-space: nowrap;
+}
+
+.layui-form-item .layui-input,
+.layui-form-item .layui-textarea {
+	height: 30px;
+}
+
+.layui-form-label {
+	padding: 5px 15px;
+	width: 50px;
+}
+
+.layui-form-select dl {
+	top: 30px;
+}
+
+.layui-form-select dl dd,
+.layui-form-select dl dt {
+	line-height: 30px;
+}
+
+.card {
+	width: 100%;
+	height: 100px;
+	background-color: #FFFFFF;
+	display: flex;
+}
+
+.card-icon {
+	width: 35%;
+	display: flex;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.card-box {
+	width: 65%;
+	height: 100%;
+	padding-right: 30px;
+}
+
+.card-icon-bor {
+	width: 50px;
+	height: 50px;
+	border-radius: 100%;
+	background-color: rgba(255, 255, 255, 0.2);
+	text-align: center;
+	line-height: 50px;
+}
+
+.card-icon-bor>i {
+	color: #FFFFFF;
+	font-size: 20px;
+}
+
+.card-box-title {
+	color: #FFFFFF;
+	font-size: 14px;
+	margin-top: 20px;
+	text-align: right;
+}
+
+.card-box-num {
+	font-size: 30px;
+	color: #FFFFFF;
+	margin-top: 15px;
+	text-align: right;
+}
+
+.tool {
+	float: right;
+}
+
+.layui-form-radio>i:hover,
+.layui-form-radioed>i {
+	color: #33cabb;
+}
+
+.lod {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	margin: auto;
+	width: 40px;
+	height: 40px;
+	line-height: 40px;
+}
+
+.lod>i {
+	font-size: 40px;
+	background: linear-gradient(to right, orangered, orange, gold, lightgreen, cyan, dodgerblue, mediumpurple, hotpink, orangered);
+	-webkit-background-clip: text;
+	color: transparent;
+	width: 40px;
+	height: 40px;
+	display: block;
+}
+
+.layui-table-view {
+	border: none;
+}
+
+.layui-table-header,
+.layui-table thead tr {
+	background-color: #FFFFFF !important;
+}
+
+.layui-btn {
+	width: 50px;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.layui-progress {
+	top: 15px
+}
+
+.layui-btn-normal {
+	background-color: #5fb878;
+}
+
+.layui-progress-bar,
+.layui-progress {
+	border-radius: 0;
+}
+
+#cpu,
+#memory {
+	display: inline-block;
+}
+
+/* .layui-table-box {
+	height: 350px;
+	overflow: auto;
+} */
+
+/* .layui-table-box::-webkit-scrollbar,
+.layui-table-body::-webkit-scrollbar {
+	width: 5px;
+	display: none;
+}
+
+.layui-table-box::-webkit-scrollbar,
+.layui-table-body::-webkit-scrollbar {
+	display: none;
+} */
+
+.layui-table-box {
+	border: none;
+}
+
+.layui-form-radio {
+	margin: 0 !important;
+}
