@@ -2,7 +2,7 @@
 /*
  * @Author: yihua
  * @Date: 2022-06-25 19:37:15
- * @LastEditTime: 2022-07-03 00:34:16
+ * @LastEditTime: 2022-07-30 13:52:35
  * @LastEditors: yihua
  * @Description: 
  * @FilePath: \ccpy\install\class.php
@@ -22,18 +22,17 @@ class install
      */
     public function daddslashes($string, $force = 0, $strip = FALSE)
     {
-
-        !defined('MAGIC_QUOTES_GPC') && define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
-        if (!MAGIC_QUOTES_GPC || $force) {
-            if (is_array($string)) {
-                foreach ($string as $key => $val) {
-                    $string[$key] = install::daddslashes($val, $force, $strip);
-                }
-            } else {
-                $string = htmlspecialchars($strip ? stripslashes($string) : $string);
-            }
-        }
-        return $string;
+        // !defined('MAGIC_QUOTES_GPC') && define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
+        // if (!MAGIC_QUOTES_GPC || $force) {
+        //     if (is_array($string)) {
+        //         foreach ($string as $key => $val) {
+        //             $string[$key] = install::daddslashes($val, $force, $strip);
+        //         }
+        //     } else {
+        //         $string = htmlspecialchars($strip ? stripslashes($string) : $string);
+        //     }
+        // }
+        return addslashes($string);
     }
     
 

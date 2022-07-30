@@ -77,11 +77,11 @@ switch ($_QET['act']) {
         $sqluser="UPDATE sub_admin SET siteurl='".$site_url."' WHERE username='admin'";
         DB::query($sqluser);
         if ($_QET['state'] == 2) {
-            @file_put_contents("../install.lock", '安装锁 V1.4');
+            @file_put_contents("../install.lock", '安装锁');
             die(json_encode(['code' => 1, 'msg' => '安装完成！<br/>SQL成功' . $a . '句/失败' . $b . '句,未删除原数据,进入下一步即可!']));
         }
         if ($b == 0) {
-            @file_put_contents("../install.lock", '安装锁 V1.4');
+            @file_put_contents("../install.lock", '安装锁');
  
             die(json_encode(['code' => 1, 'msg' => '安装完成！<br/>SQL成功' . $a . '句/失败' . $b . '句']));
         } else {
