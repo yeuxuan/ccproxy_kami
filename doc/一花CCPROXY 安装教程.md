@@ -8,7 +8,7 @@
 
 ![image-20220709000828688](typora-user-images/image-20220709000828688.png)
 
-![image-20220709000930807]typora-user-images/image-20220709000930807.png)
+![image-20220709000930807](typora-user-images/image-20220709000930807.png)
 
 然后打开我们的bt面板，看图操作：
 
