@@ -6,7 +6,7 @@
 
 首先下载源码一定要下载最新版本的！
 
-![image-20220709000828688](/yeuxuan/ccproxy_kami/blob/main/doc/typora-user-images\image-20220709000828688.png)
+![image-20220709000828688](/yeuxuan/ccproxy_kami/blob/main/doc/typora-user-images/image-20220709000828688.png)
 
 ![image-20220709000930807](https://github.com/yeuxuan/ccproxy_kami/blob/main/doc/typora-user-images\image-20220709000930807.png)
 
