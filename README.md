@@ -1,16 +1,15 @@
-# ccproxy-
-**ccproxy卡密管理系统 生成卡密 激活 用户在线管理 websocket 通讯**
+# ccproxy-一花服务器卡密管理系统
+**ccproxy卡密管理系统 生成卡密 激活 用户在线管理 websocket 通讯 fsopen 通讯** 
 
-># 当前程序最新版本为 **V1.4**
+># 当前程序最新版本为 **V1.4s**
 
-#**[<font style="color:red;">更新程序请下载程序更新包！</font>][1]**
+#**[<font style="color:red;">必须使用PHP7.4 不能会有问题！必须使用PHP7.4 不能会有问题！必须使用PHP7.4 不能会有问题！</font>][1]**
 
-#V 1.4 更新日志
->* 1.优化代码，修复bug
->* 2.优化UI，打开网站更快了
->* 3.修复不能注册、充值、查询bug
->* 4.程序适配到PHP8.0+
->* 5.还有更多优化快去安装尝试吧！
+#**[<font style="color:red;">更新程序请下载程序更新包！【暂时没有更新包】</font>][1]**
+
+#V 1.4s 更新日志
+
+>* 1.稳定性，优化
 
 # 程序安装教程
 
@@ -20,4 +19,4 @@
 >* 4.教程还在准备！稍等哦！
 
 
-  [1]: https://wwt.lanzouy.com/iH1vu08nmx3a "更新包下载"
+[1]: https://wwt.lanzouy.com/iH1vu08nmx3a "更新包下载"
