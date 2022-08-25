@@ -848,7 +848,7 @@ switch ($act) {
                 }
 
                 $state=isset($data["state"])?"1":"0";
-                $sql="UPDATE server_list SET ip='".$data["serverip"]."',serveruser='".$data["user"]."',password='".$data["pwd"]."',state='$state',comment='".$data["comment"]."' WHERE id='".$data["id"]."'";
+                $sql="UPDATE server_list SET ip='".$data["serverip"]."',serveruser='".$data["user"]."',password='".$data["pwd"]."',state='$state',comment='".$data["comment"]."',cport='".$data["cport"]."' WHERE id='".$data["id"]."'";
                
                 if($DB->exe($sql)>0){
                     $json = [
