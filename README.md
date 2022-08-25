@@ -3,7 +3,7 @@
 
 ># 当前程序最新版本为 **V1.4s**
 
-[安装教程文档]: https://github.com/yeuxuan/ccproxy_kami/blob/main/doc/%E4%B8%80%E8%8A%B1CCPROXY%20%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B.md	"安装教程文档"
+# [**安装教程文档**](doc/%E4%B8%80%E8%8A%B1CCPROXY%20%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B.md "安装教程文档")
 
 #**[<font style="color:red;">必须使用PHP7.4 不能会有问题！必须使用PHP7.4 不能会有问题！必须使用PHP7.4 不能会有问题！</font>][1]**
 
