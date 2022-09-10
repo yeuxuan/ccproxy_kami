@@ -2,7 +2,7 @@
 /*
  * @Author: yihua
  * @Date: 2022-02-16 00:22:38
- * @LastEditTime: 2022-07-29 13:56:15
+ * @LastEditTime: 2022-09-10 22:21:35
  * @LastEditors: yihua
  * @Description: 
  * @FilePath: \ccpy\api\cpproxy.php
@@ -353,9 +353,6 @@ function update($proxyaddress, $admin_username, $admin_password, $admin_port, $d
     }
     if (strlen($admin_username) < 5) {
         return ["code" => "-1", "msg" => "用户名长度不合法", "icon" => "5"];
-    }
-    if (!CheckStrPwd($admin_password)) {
-        return ["code" => "-1", "msg" => "密码不合法", "icon" => "5"];
     }
     $post = ["user"];
     $is = true;
