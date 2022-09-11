@@ -491,8 +491,8 @@ function SerchearchAllServer($app, $user, $DB)
     };
     yield from ForServer($serverarr, $user);
    } catch (Exception  $th) {
-    yield null;
-    //throw $th;
+    //yield null;
+    throw $th;
    }
 }
 /**
@@ -524,8 +524,8 @@ function IDelUser($username, $admin_password, $adminport, $proxyaddress)
         yield false;
     }
    } catch (Exception $th) {
-    yield null;
-    //throw $th;
+    //yield null;
+    throw $th;
    }
 }
 /**
@@ -537,8 +537,8 @@ try {
     $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $serverip . "'"); //$ip['serverip']服务器IP
     yield from IDelUser($user, $server['password'], $server['cport'], $server['ip']);
 } catch (Exception $th) {
-    //throw $th;
-    yield null;
+    throw $th;
+    //yield null;
 }
 }
 
@@ -625,8 +625,8 @@ function AddUser($proxyaddress,$admin_password,$admin_port,$userdata)
             return ["code" => "1", "msg"=>"注册用户成功", "icon" => "1"];
         }
   } catch (Exception $th) {
-    yield null;
-    //throw $th;
+    //yield null;
+    throw $th;
   }
     
 }
