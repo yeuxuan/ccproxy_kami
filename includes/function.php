@@ -492,7 +492,8 @@ function SerchearchAllServer($app, $user, $DB)
     yield from ForServer($serverarr, $user);
    } catch (Exception  $th) {
     //yield null;
-    throw $th;
+   // throw $th;
+   return ["code" => "-1", "msg"=>"无法连接到CCProxy", "icon" => "5"];
    }
 }
 /**
@@ -525,7 +526,8 @@ function IDelUser($username, $admin_password, $adminport, $proxyaddress)
     }
    } catch (Exception $th) {
     //yield null;
-    throw $th;
+    //throw $th;
+    return ["code" => "-1", "msg"=>"无法连接到CCProxy", "icon" => "5"];
    }
 }
 /**
@@ -537,8 +539,9 @@ try {
     $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $serverip . "'"); //$ip['serverip']服务器IP
     yield from IDelUser($user, $server['password'], $server['cport'], $server['ip']);
 } catch (Exception $th) {
-    throw $th;
+   // throw $th;
     //yield null;
+    return ["code" => "-1", "msg"=>"无法连接到CCProxy", "icon" => "5"];
 }
 }
 
@@ -626,7 +629,8 @@ function AddUser($proxyaddress,$admin_password,$admin_port,$userdata)
         }
   } catch (Exception $th) {
     //yield null;
-    throw $th;
+    //throw $th;
+    return ["code" => "-1", "msg"=>"无法连接到CCProxy", "icon" => "5"];
   }
     
 }

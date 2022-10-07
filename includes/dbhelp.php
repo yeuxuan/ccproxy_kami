@@ -44,7 +44,7 @@ class SpringMySQLi
         $this->dbUpwd   = $pwd;
         $this->dbName   = $dbname;
         $this->dbChar   = $charset;
-        $this->dbConn   = false;
+        $this->dbConn;
 
 
         $this->count    =0;

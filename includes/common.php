@@ -2,7 +2,7 @@
 /*
  * @Author: yihua
  * @Date: 2022-06-25 21:02:04
- * @LastEditTime: 2022-08-23 17:18:08
+ * @LastEditTime: 2022-08-24 08:45:12
  * @LastEditors: yihua
  * @Description: 
  * @FilePath: \ccpy\includes\common.php
@@ -78,7 +78,7 @@ exit(0);
 // //连接数据库
 include_once SYSTEM_ROOT . 'dbhelp.php';
 $DB= new SpringMySQLi($dbconfig['host'], $dbconfig['user'], $dbconfig['pwd'], $dbconfig['dbname']);
-$sql = 'SELECT * FROM `sup_admin` ';
+$sql = 'SELECT * FROM `sub_admin` ';
 $count = $DB->select($sql)==NULL ? array() :  $DB->select($sql) ;
 $installcheck=count($count)>0?true:false;
 if ($installcheck == false) {
