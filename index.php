@@ -27,6 +27,12 @@ include("./includes/common.php");
             border-radius: 10px;
             background-color: #fff;
         }
+
+        .layui-form-selectup dl{
+			top: auto; 
+    		bottom: auto;
+		}
+
         /* .layui-edge {
             right: 70px!important;
         } */
@@ -65,6 +71,7 @@ include("./includes/common.php");
             <div style="margin: 0;" class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
                 <ul class="layui-tab-title">
                     <li class="layui-this">卡密充值</li>
+                    <!-- <li>卡密兑换</li> -->
                     <li>用户注册</li>
                     <li>用户查询</li>
                 </ul>
@@ -80,6 +87,14 @@ include("./includes/common.php");
                             <button id="pay" type="button" class="layui-btn layui-btn-normal">充值</button>
                         </div>
                     </div>
+                    <!-- <div class="layui-tab-item">
+                         <div class="layui-input-block">
+                            <input type="text" name="code" id="post-code" class="layui-input inputs" placeholder="请输入兑换卡密" lay-verify="required" />
+                        </div>
+                        <div class="layui-input-block layui-btn-xs submit">
+                            <button id="postpay" type="button" class="layui-btn layui-btn-normal">兑换</button>
+                        </div>
+                    </div> -->
                     <div class="layui-tab-item">
                         <div class="layui-input-block">
                             <input type="text" name="km" id="reg-user" class="layui-input inputs" placeholder="请输入账号" lay-verify="required" />
@@ -133,7 +148,7 @@ include("./includes/common.php");
     <script src="./assets/js/sweetalert.min.js"></script>
     <script type="text/javascript">
         layui.use(["jquery", "table", "laydate", "form", "upload", "element","flow"], function() {
-
+            
             var $ = layui.$,
                 table = layui.table,
                 laydate = layui.laydate,
@@ -141,6 +156,13 @@ include("./includes/common.php");
                 upload = layui.upload,
                 flow = layui.flow,
                 element = layui.element;
+            var height=0;
+
+                form.on("select(app)", function(obj) {
+                    if(height!=0){
+                        $(".layui-show").innerHeight(height);
+                    }
+			    });
 
             select();
             flow.lazyimg(); 
@@ -162,6 +184,11 @@ include("./includes/common.php");
                                 elem.append(item);
                             }
                             form.render("select");
+                            $(".layui-form-select").on("click",function(){
+                                height=$(".layui-show").outerHeight();
+                                $(".layui-show").innerHeight($(".layui-anim-upbit").height()+40);
+
+                            });
                         }
                     },
                     error: function(data) {
@@ -176,6 +203,9 @@ include("./includes/common.php");
 
         });
         $(function() {
+
+           
+
             $("#pay").click(function() {
                 var user = $("#pay-user").val();
                 var code = $("#pay-code").val();

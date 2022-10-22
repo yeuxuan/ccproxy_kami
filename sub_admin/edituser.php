@@ -17,6 +17,9 @@ $user=$_REQUEST["user"];
 $pwd=$_REQUEST["pwd"];
 $use_date=$_REQUEST["use_date"];
 $serverip=$_REQUEST["serverip"];
+$connection=$_REQUEST["connection"]=="无限制"?-1:$_REQUEST["connection"];
+$bandwidthup=$_REQUEST["bandwidthup"]=="无限制"?-1:$_REQUEST["bandwidthup"];
+$bandwidthdown=$_REQUEST["bandwidthdown"]=="无限制"?-1:$_REQUEST["bandwidthdown"];
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,7 +55,7 @@ $serverip=$_REQUEST["serverip"];
 			<span class="layui-must">*</span>
 		</label>
 		<div class="layui-input-block">
-			<input type="text" name="user" value="<?=$user; ?>" class="layui-input" lay-verify="required" placeholder="请填写用户名" />
+			<input type="text" name="user" value="<?=$user; ?>" class="layui-input" lay-verify="required" placeholder="请填写用户名"  disabled/>
 		</div>
 		<div class="layui-input-block" style="display:none">
 			<input type="text" name="serverip" value="<?=$serverip; ?>" class="layui-input"  placeholder="" />
@@ -77,7 +80,30 @@ $serverip=$_REQUEST["serverip"];
 			<input type="text" name="use_date" value="<?=$use_date; ?>" class="layui-input" placeholder="yyyy-MM-dd HH:mm:ss">
 		</div>
 	</div>
-
+	<div class="layui-form-item">
+		<label class="layui-form-label" title="连接数">
+			连接数
+		</label>
+		<div class="layui-input-inline">
+			<input type="text" name="connection" value="<?=$connection; ?>" class="layui-input" placeholder="-1 表示不限制">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label" title="上行带宽">
+			上行带宽
+		</label>
+		<div class="layui-input-inline">
+			<input type="text" name="bandwidthup" value="<?=$bandwidthup; ?>" class="layui-input" placeholder="-1 表示不限制 单位（MS）">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label" title="下行带宽">
+			下行带宽
+		</label>
+		<div class="layui-input-inline">
+			<input type="text" name="bandwidthdown" value="<?=$bandwidthdown; ?>" class="layui-input" placeholder="-1 表示不限制 单位（MS）">
+		</div>
+	</div>
 	<!-- <div class="layui-form-item">
 		<label class="layui-form-label" title="应用">
 			应用
@@ -158,6 +184,9 @@ $serverip=$_REQUEST["serverip"];
 						pwd:data.field.pwd,
 						day:data.field.use_date,
 						serverip:data.field.serverip,
+						connection:data.field.connection,
+						bandwidthup:data.field.bandwidthup,
+						bandwidthdown:data.field.bandwidthdown
 					}
 				},
 				beforeSend: function() {

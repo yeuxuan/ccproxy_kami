@@ -339,9 +339,22 @@ switch ($act) {
         }
         break;
     case "newkami":
-        if (isset($_POST['app']) && isset($_POST['qianzhui']) && isset($_POST["duration"]) && isset($_POST["kamidur"]) && isset($_POST["kaminum"]) && isset($_POST["comment"]) && isset($_POST["kamilen"])) {
+        if (isset($_POST['app']) && isset($_POST['qianzhui']) && isset($_POST["duration"]) && isset($_POST["kamidur"]) && isset($_POST["kaminum"]) && isset($_POST["comment"]) && isset($_POST["kamilen"])&& isset($_POST["connection"])&& isset($_POST["bandwidthup"])&& isset($_POST["bandwidthdown"])) {
             // $sql="UPDATE server_list SET state=\"".addslashes($_POST["state"])."\" WHERE ip=\"".addslashes(str_replace(array("<",">","/"),array("&lt;","&gt;",""),$_POST['ip']))."\" ";
             // $result=$DB->exe($sql);
+
+            if(!empty($_POST["connection"])&&!is_numeric($_POST["connection"])){
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+            }
+
+            if(!empty($_POST["bandwidthup"])&&!is_numeric($_POST["bandwidthup"])){
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+            }
+
+            if(!empty($_POST["bandwidthdown"])&&!is_numeric($_POST["bandwidthdown"])){
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+            }
+
             $kami = array();
             for ($i = 0; $i < $_POST["kaminum"]; $i++) {
                 $kami[$i] = array(
@@ -349,6 +362,11 @@ switch ($act) {
                 );
             }
             $flag = true;
+            $ext=[
+                "connection"=>empty($_POST["connection"])?-1:$_POST["connection"],
+                "bandwidthup"=>empty($_POST["bandwidthup"])?-1:$_POST["bandwidthup"]*1024,
+                "bandwidthdown"=>empty($_POST["bandwidthdown"])?-1:$_POST["bandwidthdown"]*1024
+            ];
             foreach ($kami as $key => $ka) {
                 $arr = array(
                     'kami'  => $kami[$key]["kami"],
@@ -358,6 +376,7 @@ switch ($act) {
                     'state'  => 0,
                     'app'  => $_POST["app"],
                     'comment'  => $_POST["comment"],
+                    'ext'=>json_encode($ext)
                 );
                 // print_r($arr);
                 $exec = $DB->insert('kami', $arr);
@@ -544,17 +563,21 @@ switch ($act) {
                     }, array());
                     $user_updata = array();
                     foreach ($result as $key => $value) {
+
                         $getdata = array(
                             "id" => $value['id'],
                             "user" => $value['user'],
                             "pwd" => $value['pwd'],
                             "state" => $value['state'],
                             "pwdstate" => $value['pwdstate'],
-                            "disabletime" => $value['disabletime'],
-                            "expire" => $value['expire'],
+                            "disabletime" => $value['autodisable']==0?'2099-10-13 14:34:26':$value['disabletime'],
+                            "expire" => $value['autodisable']==0?0:$value['expire'],
                             "user" => $value['user'],
                             'serverip' => $value["serverip"],
-                            'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname']
+                            'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname'],
+                            "connection"=>$value['connection']==-1?"无限制":$value['connection'],
+                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":$value['bandwidthup']/1024,
+                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":$value['bandwidthdown']/1024
                         );
                         array_push($user_updata, $getdata);
                     }
@@ -597,7 +620,10 @@ switch ($act) {
                             "expire" => $value['expire'],
                             "user" => $value['user'],
                             'serverip' => $value["serverip"],
-                            'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname']
+                            'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname'],
+                            "connection"=>$value['connection']==-1?"无限制":$value['connection'],
+                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":$value['bandwidthup']/1024,
+                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":$value['bandwidthdown']/1024
                         );
                         array_push($user_updata, $getdata);
                     }
@@ -641,7 +667,10 @@ switch ($act) {
                             "expire" => $value['expire'],
                             "user" => $value['user'],
                             'serverip' => $value["serverip"],
-                            'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname']
+                            'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname'],
+                            "connection"=>$value['connection']==-1?"无限制":$value['connection'],
+                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":$value['bandwidthup']/1024,
+                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":$value['bandwidthdown']/1024
                         );
                         array_push($user_updata, $getdata);
                     }
@@ -684,7 +713,10 @@ switch ($act) {
                             "expire" => $value['expire'],
                             "user" => $value['user'],
                             'serverip' => $value["serverip"],
-                            'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname']
+                            'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname'],
+                            "connection"=>$value['connection']==-1?"无限制":$value['connection'],
+                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":$value['bandwidthup']/1024,
+                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":$value['bandwidthdown']/1024
                         );
                         array_push($user_updata, $getdata);
                     }
@@ -710,9 +742,23 @@ switch ($act) {
         //UserUpdate()
         $usermodel = $_POST["usermodel"];
         if (isset($usermodel) && is_array($usermodel) && !empty($usermodel)) {
+            
+
+            if(!empty($usermodel["connection"])&&!is_numeric($usermodel["connection"])){
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+            }
+
+            if(!empty($usermodel["bandwidthup"])&&!is_numeric($usermodel["bandwidthup"])){
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+            }
+
+            if(!empty($usermodel["bandwidthdown"])&&!is_numeric($usermodel["bandwidthdown"])){
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+            }
+
             $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $usermodel['serverip'] . "'"); //$ip['serverip']服务器IP
             //print($server["password"]."".$server["cport"]."".$server["ip"]."".$usermodel["user"]."".$usermodel["pwd"]."".$usermodel["day"]);
-            $result = UserUpdate($server["password"], $server["cport"], $server["ip"], $usermodel["user"], $usermodel["pwd"], $usermodel["day"]);
+            $result = UserUpdate($server["password"], $server["cport"], $server["ip"], $usermodel["user"], $usermodel["pwd"], $usermodel["day"],$usermodel["connection"],$usermodel["bandwidthup"]*1024,$usermodel["bandwidthdown"]*1024);
             WriteLog("用户编辑", "编辑了" . $usermodel, $subconf['username'], $DB);
             exit(json_encode($result, JSON_UNESCAPED_UNICODE));
         }
@@ -788,14 +834,14 @@ switch ($act) {
         $usermodel = $_POST["usermodel"];
         if (isset($usermodel) && is_array($usermodel)) {
             $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $usermodel['serverip'] . "'"); //$ip['serverip']服务器IP
-            $code = UserUpdate($server["password"], $server["cport"], $server["ip"], $usermodel["user"], $usermodel["pwd"], $usermodel["day"], $usermodel["sw"]);
+            $code = UserUpdate($server["password"], $server["cport"], $server["ip"], $usermodel["user"], $usermodel["pwd"], $usermodel["day"], $usermodel["connection"],$usermodel["bandwidthup"],$usermodel["bandwidthdown"],$usermodel["sw"]);
         } else {
             $code = [
                 "code" => "-1",
                 "msg" => "失败参数为空或者其他错误!",
             ];
         }
-        
+        exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         break;
     case "siteinfo":
         // $scheduler = new Scheduler;

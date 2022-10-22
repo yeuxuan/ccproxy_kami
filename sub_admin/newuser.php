@@ -28,6 +28,10 @@ if (!($islogin == 1)) {
 		.usetime{
 			display: none;
 		}
+		.layui-form-selectup dl{
+			top: auto; 
+    		bottom: auto;
+		}
 	</style>
 </head>
 

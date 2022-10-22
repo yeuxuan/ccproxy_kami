@@ -75,7 +75,7 @@ function checkquery($DB)
 function checkinsert($DB)
 {
     if (isset($_POST["user"]) && isset($_POST["pwd"]) && isset($_POST["code"])) {
-        $kami = $DB->selectRow("select count(*) as num,app,times,state from kami where kami='" . $_POST["code"] . "' GROUP BY app,times,state");
+        $kami = $DB->selectRow("select count(*) as num,app,times,state,ext from kami where kami='" . $_POST["code"] . "' GROUP BY app,times,state,ext");
         if ($kami['num'] > 0) {
             if ($kami['state'] == 0) {
                 $ip = $DB->selectRow("select serverip from application where appcode='" . $kami['app'] . "'");
@@ -92,7 +92,7 @@ function checkinsert($DB)
                         "msg" => "账号已经存在"
                     ];
                 } else {
-                    $msg = insert($proxyaddress, $admin_username, $admin_password, $admin_port, $kami['times'], $_POST["user"], $_POST["pwd"]);
+                    $msg = insert($proxyaddress, $admin_username, $admin_password, $admin_port, $kami['times'], $_POST["user"], $_POST["pwd"],$kami['ext']);
                     if ($msg["icon"] == 1) {
                         $usr = array(
                             'state' => 1,
@@ -137,7 +137,7 @@ function checkinsert($DB)
 function checkupdate($DB)
 {
     if (isset($_POST["user"]) && isset($_POST["code"])) {
-        $kami = $DB->selectRow("select count(*) as num,app,times,state from kami where kami='" . $_POST["code"] . "' GROUP BY app,times,state");
+        $kami = $DB->selectRow("select count(*) as num,app,times,state,ext from kami where kami='" . $_POST["code"] . "' GROUP BY app,times,state,ext");
         if ($kami['num'] > 0) {
             if ($kami['state'] == 0) {
                 $ip = $DB->selectRow("select serverip from application where appcode='" . $kami['app'] . "'");
@@ -170,13 +170,13 @@ function checkupdate($DB)
                     } else {
                         $json = [
                             "code" => 1,
-                            "msg" => update($proxyaddress, $admin_username, $admin_password, $admin_port, $kami['times'], $date)
+                            "msg" => update($proxyaddress, $admin_username, $admin_password, $admin_port, $kami['times'], $date,$kami["ext"])
                         ];
                         $usr = array(
                             'state' => 1,
                             'username' => $_POST["user"],
                             'use_date' => date("Y-m-d H:i:s"),
-                            'end_date' => $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . $kami['times'] . " day")) : date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") . $kami['times'] . " day"))
+                            'end_date' => $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . ($kami['times']>0&&$kami['times']<1)?$kami['times']*10 . " hours":$kami['times'] . " day")) : date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") . ($kami['times']>0&&$kami['times']<1)?$kami['times']*10 . " hours ":$kami['times'] . " day"))
                         );
                         $exec = $DB->update('kami', $usr, "kami='" . $_POST["code"] . "'");
                     }
@@ -205,7 +205,7 @@ function checkupdate($DB)
  * 添加具体方法
  */
 
-function insert($proxyaddress, $admin_username, $admin_password, $admin_port, $day, $user, $pwd)
+function insert($proxyaddress, $admin_username, $admin_password, $admin_port, $day, $user, $pwd,$ext)
 {
     $username = $user;
     $password = $pwd;
@@ -228,10 +228,10 @@ function insert($proxyaddress, $admin_username, $admin_password, $admin_port, $d
     if ($is) {
         $ipaddress = "";
         $macaddress = "";
-        $connection = "-1";
-        $bandwidth = "-1";
+        $connection = json_decode($ext,true)["connection"];
+        $bandwidth = json_decode($ext,true)["bandwidthup"]."/".json_decode($ext,true)["bandwidthdown"];
         $date = date("Y-m-d H:i:s");
-        $enddate = date('Y-m-d H:i:s', strtotime("$date + " . $day . " day"));
+        $enddate = date('Y-m-d H:i:s', strtotime("$date + " . ($day>0&&$day<1)?$day ." hours":$day . " day"));
         $end_date = explode(" ", $enddate);
         $disabledate = $end_date[0];
         $disabletime = $end_date[1];
@@ -346,7 +346,7 @@ function del()
 /**
  * 更新方法
  */
-function update($proxyaddress, $admin_username, $admin_password, $admin_port, $day, $date)
+function update($proxyaddress, $admin_username, $admin_password, $admin_port, $day, $date,$ext)
 {
     if (!CheckStrChinese($admin_username)) {
         return ["code" => "-1", "msg" => "用户名不合法", "icon" => "5"];
@@ -364,10 +364,10 @@ function update($proxyaddress, $admin_username, $admin_password, $admin_port, $d
     if ($is) {
         $username = $_POST["user"];
         // $password = $_REQUEST["password"];
-        $connection = '-1';
-        $bandwidth = '-1';
+        $connection = json_decode($ext,true)["connection"];
+        $bandwidth = json_decode($ext,true)["bandwidthup"]."/".json_decode($ext,true)["bandwidthdown"];
         $cdate = date("Y-m-d H:i:s");
-        $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . $day . " day")) : date('Y-m-d H:i:s', strtotime($cdate . $day . " day"));
+        $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . ($day>0&&$day<1)?$day*10 . " hours":$day . " day")) : date('Y-m-d H:i:s', strtotime($cdate . $day . " day"));
         // $enddate=date('Y-m-d H:i:s',strtotime("$date + ".$day." day"));
         $end_date = explode(" ", $enddate);
         $disabledate = $end_date[0];

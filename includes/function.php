@@ -274,6 +274,11 @@ function queryuserall($adminpassword, $adminport, $proxyaddress)
     preg_match_all('/<input .* name="disabledate" .* value="(.*?)"/ui', $line, $match5);
     preg_match_all('/<input .* name="disabletime" .* value="(.*?)"/ui', $line, $match6);
     preg_match_all('/<input .* name="autodisable" .*/', $line, $match7);
+    preg_match_all('/<input .* name="connection" .* value="(.*?)"/ui', $line, $match8);
+    preg_match_all('/<input .* name="bandwidth" .* value="(.*?)"/ui', $line, $match9);
+
+
+
     $ccp = array();
     $time = date("Y-m-d H:i:s");
     foreach ($match[1] as $key => $use) {
@@ -294,8 +299,13 @@ function queryuserall($adminpassword, $adminport, $proxyaddress)
             "pwdstate" => $match4[0][$key],
             "disabletime" => $match5[1][$key] . " " . $match6[1][$key],
             "expire" => strtotime($time) > strtotime($match5[1][$key] . " " . $match6[1][$key]) ? 1 : 0,
+            "connection"=>$match8[1][$key],
+            "bandwidthup"=>explode("/",$match9[1][$key])[0],
+            "bandwidthdown"=>explode("/",$match9[1][$key])[1],
+            "autodisable"=>$match7[0][$key]
         );
     }
+
     return $ccp;
 }
 
@@ -334,7 +344,7 @@ function WriteLog($operation, $msg, $operationer, $DB)
  * @return {*}
  * @use: 
  */
-function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password, $day, $userenable="0")
+function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password, $day,$connection2,$bandwidthup,$bandwidthdown, $userenable="0")
 {
     if (!CheckStrChinese($user)) {
         return ["code" => "-1", "msg"=>"用户名不合法", "icon" => "5"];
@@ -352,8 +362,8 @@ function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password,
         return ["code" => "-1", "msg"=>"用户名不存在", "icon" => "5"];
     } else {
         $username = $user;
-        $connection = '-1';
-        $bandwidth = '-1';
+        $connection = $connection2;
+        $bandwidth = $bandwidthup.'/'.$bandwidthdown;
         $cdate = date("Y-m-d H:i:s");
       //  $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . $day . " day")) : date('Y-m-d H:i:s', strtotime($cdate . $day . " day"));
         // $enddate=date('Y-m-d H:i:s',strtotime("$date + ".$day." day"));
@@ -382,6 +392,7 @@ function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password,
             $url = $url . "bandwidth=" . $bandwidth . "&";
             $url = $url . "disabledate=" . $disabledate . "&";
             $url = $url . "disabletime=" . $disabletime . "&";
+            $url = $url . "bandwidthquota=4560" . "&";
            // $url = $userenable == "" ? "" : $url . "enable=1" . "&";
             if($userenable==0){
                 $url = $url . "enable=1" . "&";
@@ -390,7 +401,7 @@ function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password,
 
             $len = "Content-Length: " . strlen($url);
             $auth = "Authorization: Basic " . base64_encode("admin" . ":" . $adminpassword);
-            $msg = "POST " . $url_ . " HTTP/1.0\r\nHost: " . $proxyaddress . "\r\n" . $auth . "\r\n" . $len . "\r\n" . "\r\n" . $url;
+            $msg = "POST " . $url_ . " HTTP/1.1\r\nHost: " . $proxyaddress . "\r\n" . $auth . "\r\n" . $len . "\r\n" . "\r\n" . $url;
             fputs($fp, $msg);
             //echo $msg;
             while (!feof($fp)) {
@@ -450,7 +461,11 @@ function ForServer($server, $user)
                 "disabletime" => $alldata[$j]['disabletime'],
                 "expire" => $alldata[$j]['expire'],
                 "user" => $alldata[$j]['user'],
-                'serverip' => $value["ip"]
+                'serverip' => $value["ip"],
+                "connection"=>$alldata[$j]['connection'],
+                "bandwidthup"=>$alldata[$j]['bandwidthup'],
+                "bandwidthdown"=>$alldata[$j]['bandwidthdown'],
+                "autodisable"=>$alldata[$j]['autodisable']
             );
            // var_dump($getdata);
             array_push($user_arr, $getdata);

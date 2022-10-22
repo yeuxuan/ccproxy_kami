@@ -163,6 +163,30 @@ include("foot.php");
 						toolbar: "#pwddot"
 						// sort: true
 					}, {
+						field: "connection",
+						title: "连接数",
+						//minWidth: 100,
+						align: "center",
+						width: 100,
+						// hide: true
+						// sort: true
+					}, {
+						field: "bandwidthup",
+						title: "上行带宽",
+						//minWidth: 100,
+						align: "center",
+						width: 100,
+						// hide: true
+						// sort: true
+					}, {
+						field: "bandwidthdown",
+						title: "下行带宽",
+						//minWidth: 100,
+						align: "center",
+						width: 100,
+						// hide: true
+						// sort: true
+					}, {
 						field: "disabletime",
 						title: "到期时间",
 						//minWidth: 100,
@@ -175,7 +199,7 @@ include("foot.php");
 						title: "到期状态",
 						//minWidth: 100,
 						width: 170,
-						sort:true,
+						// sort:true,
 						align: "center",
 						toolbar:"#expirdot"
 						// sort: true
@@ -256,7 +280,7 @@ include("foot.php");
 						title: "编辑用户",
 						area: ["400px", "400px"],
 						maxmin: false,
-						content: "edituser.php?user="+data.user+"&pwd="+data.pwd+"&use_date="+data.disabletime+"&serverip="+data.serverip,
+						content: "edituser.php?user="+data.user+"&pwd="+data.pwd+"&use_date="+data.disabletime+"&serverip="+data.serverip+"&connection="+data.connection+"&bandwidthup="+data.bandwidthup+"&bandwidthdown="+data.bandwidthdown,
 						cancel: function(index, layero) {
 							reload("server_list");
 						}
@@ -339,9 +363,12 @@ include("foot.php");
 				elem=$(this).parent().parent().parent().children();
 				user=elem.eq(2).text();
 				pwd=elem.eq(3).text();
-				day=elem.eq(6).text();
-				ip=elem.eq(9).text();
+				day=elem.eq(9).text();
+				ip=elem.eq(12).text();
 				sw=$(this).val();
+				connection=elem.eq(6).text()=="无限制"?-1:elem.eq(6).text();
+				bandwidthup=elem.eq(7).text()=="无限制"?-1:elem.eq(7).text();
+				bandwidthdown=elem.eq(8).text()=="无限制"?-1:elem.eq(8).text();
 				$.ajax({
 					url: "ajax.php?act=upswitchuser",
 					type: "POST",
@@ -352,7 +379,10 @@ include("foot.php");
 							pwd:pwd,
 							day:day,
 							serverip:ip,
-							sw:sw
+							sw:sw,
+							connection:connection,
+							bandwidthup:bandwidthup,
+							bandwidthdown:bandwidthdown
 						}
 					},
 					beforeSend: function() {
