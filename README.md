@@ -39,4 +39,6 @@
 
 #### 捐赠码，开源不易多多支持:call_me_hand:
 
-![](http://download.vhxkx.cn//typeraimgs/微信图片_20221022184548.jpg)
+![](http://download.vhxkx.cn//typeraimgs/微信图片_20221022184915.jpg)
+
+![微信支付](http://download.vhxkx.cn//typeraimgs/微信图片_20221022184548.jpg)
