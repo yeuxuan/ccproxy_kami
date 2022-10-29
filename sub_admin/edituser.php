@@ -13,7 +13,8 @@ if (!($islogin == 1)) {
 	exit('<script language=\'javascript\'>alert("您还没有登录，请先登录！");window.location.href=\'login.php\';</script>');
 }
 
-$user=$_REQUEST["user"];
+$olduser=$_REQUEST["user"];
+$newuser=$_REQUEST["user"];
 $pwd=$_REQUEST["pwd"];
 $use_date=$_REQUEST["use_date"];
 $serverip=$_REQUEST["serverip"];
@@ -55,7 +56,8 @@ $bandwidthdown=$_REQUEST["bandwidthdown"]=="无限制"?-1:$_REQUEST["bandwidthdo
 			<span class="layui-must">*</span>
 		</label>
 		<div class="layui-input-block">
-			<input type="text" name="user" value="<?=$user; ?>" class="layui-input" lay-verify="required" placeholder="请填写用户名"  disabled/>
+			<input type="text" name="newuser" value="<?=$newuser; ?>" class="layui-input" lay-verify="required" placeholder="请填写用户名"/>
+			<input style="display: none;" type="text" name="olduser" value="<?=$olduser; ?>" class="layui-input" placeholder="请填写用户名"  disabled/>
 		</div>
 		<div class="layui-input-block" style="display:none">
 			<input type="text" name="serverip" value="<?=$serverip; ?>" class="layui-input"  placeholder="" />
@@ -180,7 +182,8 @@ $bandwidthdown=$_REQUEST["bandwidthdown"]=="无限制"?-1:$_REQUEST["bandwidthdo
 				dataType: "json",
 				data: {
 					usermodel: {
-						user:data.field.user,
+						olduser:data.field.olduser,
+						newuser:data.field.newuser,
 						pwd:data.field.pwd,
 						day:data.field.use_date,
 						serverip:data.field.serverip,

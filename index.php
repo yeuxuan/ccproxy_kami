@@ -32,6 +32,8 @@ include("./includes/common.php");
 			top: auto; 
     		bottom: auto;
 		}
+        
+
 
         /* .layui-edge {
             right: 70px!important;
@@ -46,7 +48,7 @@ include("./includes/common.php");
             <div class="layui-row">
                 <div class="layui-card layui-col-xs12">
                     <div class="wz-title">
-                        <h1>一花端口</h1>
+                        <h1><?php echo $subconf['hostname']; ?></h1>
                     </div>
                     <div class="img">
                         <!-- <img src="<?php echo $subconf['img']; ?>" alt="logo"> -->
@@ -160,8 +162,17 @@ include("./includes/common.php");
 
                 form.on("select(app)", function(obj) {
                     if(height!=0){
-                        $(".layui-show").innerHeight(height);
+                        console.log($(".layui-anim-upbit").outerHeight(true));
+                        console.log($(".layui-show").outerHeight(true));
+                        //$(".layui-show").height(height+40);
+                        if($(".layui-anim-upbit").outerHeight(true)<=$(".layui-show").outerHeight(true)){
+                            $(".layui-show").removeAttr("style");
+                            console.log("设置高");
+                        }
+                       
+                       // $(".layui-show").height(height+40);
                     }
+                    //console.log("cs");
 			    });
 
             select();
@@ -185,9 +196,15 @@ include("./includes/common.php");
                             }
                             form.render("select");
                             $(".layui-form-select").on("click",function(){
-                                height=$(".layui-show").outerHeight();
-                                $(".layui-show").innerHeight($(".layui-anim-upbit").height()+40);
-
+                                height=$(".layui-show").outerHeight(true);
+                                //$(".layui-show").innerHeight($(".layui-anim-upbit").outerHeight()+40);
+                                if($(".layui-anim-upbit").outerHeight(true)>$(".layui-show").outerHeight(true))
+                                {
+                                    
+                                    $(".layui-show").css("height",$(".layui-anim-upbit").outerHeight(true)+40);
+                                    console.log("设置高");
+                                }
+                               
                             });
                         }
                     },
@@ -424,6 +441,7 @@ include("./includes/common.php");
                             layer.msg("查询成功", {
                                 icon: 1
                             });
+                           // console.log($(".layui-show").height(210))
                             $(".time").eq(0).html(
                                 "<div style='padding: 10px; border: 1px solid #c3e6cb; border-radius: 2px; color: #155724; font-size: 12px; line-height: 2em; background-color: #33cabb; margin-bottom: 10px; '><b>" +
                                 data.msg + "</b></div>")

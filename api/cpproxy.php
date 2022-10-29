@@ -176,7 +176,7 @@ function checkupdate($DB)
                             'state' => 1,
                             'username' => $_POST["user"],
                             'use_date' => date("Y-m-d H:i:s"),
-                            'end_date' => $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . ($kami['times']>0&&$kami['times']<1)?$kami['times']*10 . " hours":$kami['times'] . " day")) : date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") . ($kami['times']>0&&$kami['times']<1)?$kami['times']*10 . " hours ":$kami['times'] . " day"))
+                            'end_date' => $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . ($kami['times']>0&&$kami['times']<1)?((int)($kami['times']*10)) . " hours":((int)$kami['times']) . " day")) : date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") . ($kami['times']>0&&$kami['times']<1)?((int)($kami['times']*10)) . " hours ":((int)$kami['times']) . " day"))
                         );
                         $exec = $DB->update('kami', $usr, "kami='" . $_POST["code"] . "'");
                     }
@@ -231,7 +231,7 @@ function insert($proxyaddress, $admin_username, $admin_password, $admin_port, $d
         $connection = json_decode($ext,true)["connection"];
         $bandwidth = json_decode($ext,true)["bandwidthup"]."/".json_decode($ext,true)["bandwidthdown"];
         $date = date("Y-m-d H:i:s");
-        $enddate = date('Y-m-d H:i:s', strtotime("$date + " . ($day>0&&$day<1)?$day ." hours":$day . " day"));
+        $enddate = date('Y-m-d H:i:s', strtotime("$date + " . ($day>0&&$day<1)?(int)($day*10) ." hours":((int)$day) . " day"));
         $end_date = explode(" ", $enddate);
         $disabledate = $end_date[0];
         $disabletime = $end_date[1];
@@ -367,7 +367,7 @@ function update($proxyaddress, $admin_username, $admin_password, $admin_port, $d
         $connection = json_decode($ext,true)["connection"];
         $bandwidth = json_decode($ext,true)["bandwidthup"]."/".json_decode($ext,true)["bandwidthdown"];
         $cdate = date("Y-m-d H:i:s");
-        $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . ($day>0&&$day<1)?$day*10 . " hours":$day . " day")) : date('Y-m-d H:i:s', strtotime($cdate . $day . " day"));
+        $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . ($day>0&&$day<1)?((int)$day*10) . " hours":((int)$day) . " day")) : date('Y-m-d H:i:s', strtotime($cdate . $day . " day"));
         // $enddate=date('Y-m-d H:i:s',strtotime("$date + ".$day." day"));
         $end_date = explode(" ", $enddate);
         $disabledate = $end_date[0];

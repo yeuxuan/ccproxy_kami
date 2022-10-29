@@ -60,6 +60,9 @@ switch ($act) {
         $DBS = DB::connect($_QET['host'], $_QET['user'], $_QET['pwd'], $_QET['dbname'], $_QET['port']);
         if (!$DBS)
             die(json_encode(['code' => -1, 'msg' => DB::connect_error()]));
+        if (DB::get_row("select * from information_schema.TABLES where TABLE_NAME  = 'sub_admin'") != null) {
+            die(json_encode(['code' => -2, 'msg' => '安装失败,请清空数据库后重试<br/>如果只是更新请直接填写config文件<br/>SQL成功' . $a . '句/失败' . $b . '句<br/>错误信息：' . $e]));
+        }
         DB::query("set sql_mode = ''");
         DB::query("set names utf8");
         $a = 0;
@@ -83,7 +86,6 @@ switch ($act) {
         }
         if ($b == 0) {
             @file_put_contents("../install.lock", '安装锁');
-
             die(json_encode(['code' => 1, 'msg' => '安装完成！<br/>SQL成功' . $a . '句/失败' . $b . '句']));
         } else {
             die(json_encode(['code' => -2, 'msg' => '安装失败,请清空数据库后重试<br/>如果只是更新请直接填写config文件<br/>SQL成功' . $a . '句/失败' . $b . '句<br/>错误信息：' . $e]));
@@ -121,8 +123,7 @@ switch ($act) {
                 DB::query("DROP TABLE  server_list");
                 DB::query("DROP TABLE  sub_admin");
                 DB::query("DROP TABLE  sup_admin");
-                DB::query("set sql_mode = ''");
-                DB::query("set names utf8");
+                DB::query("DROP TABLE  app_server");
                 $sql = file_get_contents("ccpy.sql");
                 $sql = explode(';', $sql);
                 $DBS = DB::connect($_QET['host'], $_QET['user'], $_QET['pwd'], $_QET['dbname'], $_QET['port']);
@@ -149,17 +150,46 @@ switch ($act) {
                 }
                 if ($b == 0) {
                     @file_put_contents("../install.lock", '安装锁');
-
                     die(json_encode(['code' => 1, 'msg' => '安装完成！<br/>SQL成功' . $a . '句/失败' . $b . '句']));
                 } else {
                     die(json_encode(['code' => -1, 'msg' => '安装失败,请清空数据库后重试<br/>如果只是更新请直接填写config文件<br/>SQL成功' . $a . '句/失败' . $b . '句<br/>错误信息：' . $e]));
                 }
             }
+        }else{
+            die(json_encode(['code' => -1, 'msg' => DB::connect_error()]));
         }
 
         break;
     case 3:
+        @file_put_contents("../install.lock", '安装锁');
+        die(json_encode(['code' => 1, 'msg' => '安装完成！']));
+        break;
+    case 4:
+        if (empty($_QET['host']) || empty($_QET['port']) || empty($_QET['user']) || empty($_QET['pwd']) || empty($_QET['dbname'])) die(json_encode(['code' => -1, 'msg' => '请确保每一项都不为空！']));
 
+        /**
+         * 校验
+         */
+        if (!$con = DB::connect($_QET['host'], $_QET['user'], $_QET['pwd'], $_QET['dbname'], $_QET['port'])) {
+            if (DB::connect_errno() == 2002)
+                die(json_encode(['code' => 2002, 'msg' => '连接数据库失败，数据库地址填写错误！']));
+            elseif (DB::connect_errno() == 1045)
+                die(json_encode(['code' => 2002, 'msg' => '连接数据库失败，数据库用户名或密码填写错误！']));
+            elseif (DB::connect_errno() == 1049)
+                die(json_encode(['code' => 2002, 'msg' => '连接数据库失败，数据库名不存在！']));
+            else
+                die(json_encode(['code' => DB::connect_errno(), 'msg' => '连接数据库失败' . DB::connect_error()]));
+        }
 
+        $DBS = DB::connect($_QET['host'], $_QET['user'], $_QET['pwd'], $_QET['dbname'], $_QET['port']);
+        if ($DBS) {
+            if (DB::get_row("select * from information_schema.TABLES where TABLE_NAME  = 'sub_admin'") != null) {
+                die(json_encode(['code' => 1, 'msg' => '已经安装过']));
+            }else{
+                die(json_encode(['code' => 0, 'msg' => '没有安装过']));
+            }
+        }else{
+            die(json_encode(['code' => -1, 'msg' => DB::connect_error()]));
+        }
         break;
 }

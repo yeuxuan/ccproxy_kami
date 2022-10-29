@@ -175,7 +175,7 @@ if (!($islogin == 1)) {
 									} else {
 										echo "<span style='color:#5FB878;font-weight: bold;'> " . $subconf['over_date'] . '' . "</span>";
 									}
-									if ($subconf["username"] == "admin" || $subconf["password"] == "123456" || $subconf["password"] == $subconf["username"]) {
+									if ($subconf["password"] == "123456" || $subconf["password"] == $subconf["username"]) {
 										echo '<li class="list-group-item"><span class="btn-sm btn-danger">高危</span>&nbsp;请修改默认密码，防止黑客破解</li>';
 										$safe = 1;
 										$p = 1;
@@ -274,7 +274,8 @@ if (!($islogin == 1)) {
 		$.ajax({
 			url: "ajax.php?act=siteinfo",
 			type: "POST",
-			async: false,
+			async: true,
+			timeout:3000,
 			success: function(data) {
 				if (data.code == 1) {
 					$("#user").text(data.usernum);
@@ -283,12 +284,12 @@ if (!($islogin == 1)) {
 					$("#kami").text(data.kaminum);
 					$("#app").text(data.appnum);
 					$("#jhkami").text(data.todaykami);
-
 				} else {
 					layer.msg("获取信息失败！");
 				}
 			},
 			error: function(error) {
+				layer.msg("获取信息失败！");
 				console.log(error);
 			}
 		});

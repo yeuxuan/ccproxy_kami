@@ -3,8 +3,8 @@
 /**
  * 安装程序
  */
-error_reporting(0);
-define('VERSION', '1.5'); //版本号
+// error_reporting(0);
+define('VERSION', '1.5.1'); //版本号
 session_start();
 @header('Content-Type: text/html; charset=UTF-8');
 include("../config.php");
@@ -437,40 +437,79 @@ function deldir()
                             });
                         } else if (res.code == -2) {
                             layer.close(index);
-                            layer.alert("安装失败，是否清除数据库重新安装？", {
-                                icon: 2,
-                                title: '失败提醒',
-                                end: function(layero, index) {
 
-                                    $.post('ajax.php?act=2', data.field, function(res) {
-
+                            layer.confirm('检测到已经安装，是否全新安装？', {
+                                btn: ['确定', '跳过'],
+                                icon: 3,
+                                title: "提示",
+                                btn2: function(index, layero) {
+                                    console.log("跳过");
+                                    
+                                    $.post('ajax.php?act=3',function (res){
+                                        
                                         if (res.code == 1) {
-                                            layer.close(index);
-                                            layer.alert(res.msg, {
-                                                icon: 1,
-                                                title: '成功提醒',
-                                                end: function(layero, index) {
-                                                    location.href = '?type=installok';
-                                                }
-                                            });
-                                        } else {
-                                            layer.close(index);
-                                            layer.alert(res.msg, {
-                                                icon: 2,
-                                                title: '错误编号：' + res.code
-                                            });
-                                        }
-
-                                    }).fail(function() {
                                         layer.close(index);
-                                        layer.alert("请求没有响应发生错误", {
-                                            icon: 2,
-                                            title: '没有响应'
+                                        layer.alert(res.msg, {
+                                            icon: 1,
+                                            title: '成功提醒',
+                                            end: function(layero, index) {
+                                                location.href = '?type=installok';
+                                            }
                                         });
-                                    });
+                                    } else {
+                                        layer.close(index);
+                                        layer.alert(res.msg, {
+                                            icon: 2,
+                                            title: '错误编号：' + res.code
+                                        });
+                                    }
 
+                                    });
                                 }
+                            }, function(index, layero) {
+                                console.log("确定");
+
+                                $.post('ajax.php?act=2', data.field, function(res) {
+
+                                    if (res.code == 1) {
+                                        layer.close(index);
+                                        layer.alert(res.msg, {
+                                            icon: 1,
+                                            title: '成功提醒',
+                                            end: function(layero, index) {
+                                                location.href = '?type=installok';
+                                            }
+                                        });
+                                    } else {
+                                        layer.close(index);
+                                        layer.alert(res.msg, {
+                                            icon: 2,
+                                            title: '错误编号：' + res.code
+                                        });
+                                    }
+
+                                }).fail(function() {
+                                    layer.close(index);
+                                    layer.alert("请求没有响应发生错误", {
+                                        icon: 2,
+                                        title: '没有响应'
+                                    });
+                                });
+
                             });
+
+                            // layer.alert("安装失败，是否清除数据库重新安装？", {
+                            //     icon: 2,
+                            //     title: '失败提醒',
+                            //     end: function(layero, index) {
+
+
+
+                            //     }
+                            // });
+
+
+
                         } else {
                             layer.close(index);
                             layer.alert(res.msg, {
@@ -489,7 +528,32 @@ function deldir()
                 });
             });
         </script>
-    <?php } ?>
+    <?php }else{?>
+<script> 
+         $(document).ready(function() {
+                "use strict";
+                $("#basicwizard").bootstrapWizard(), $("#progressbarwizard").bootstrapWizard({
+                    onTabShow: function(t, r, a) {
+                        var o = (a + 1) / r.find("li").length * 100;
+                        $("#progressbarwizard").find(".bar").css({
+                            width: o + "%"
+                        })
+                    }
+                }), $("#btnwizard").bootstrapWizard({
+                    nextSelector: ".button-next",
+                    previousSelector: ".button-previous",
+                    firstSelector: ".button-first",
+                    lastSelector: ".button-last"
+                }), $("#rootwizard").bootstrapWizard({
+                    onNext: function(t, r, a) {
+                        var o = $($(t).data("targetForm"));
+                        if (o && (o.addClass("was-validated"), !1 === o[0].checkValidity())) return event.preventDefault(), event.stopPropagation(), !1
+                    }
+                });
+            });
+    alert("已经安装过了，请先删除根目录下的install.lock");
+</script>
+<?php }?>
 </body>
 
 </html>

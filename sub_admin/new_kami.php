@@ -165,7 +165,7 @@ if (!($islogin == 1)) {
 			if (data.value == -1) {
 				layer.open({
 					title: 'Tips',
-					content: '自定义默认单位是天，如需要其他时间请换算！<br> <b  style="color: red;">1小时==0.1 <b> <br> <b  style="color: red;">2小时==0.2 <b><br> <b  style="color: red;">大于 1 则 单位为 天<b> '
+					content: '自定义默认单位是天，如需要其他时间请换算！<br> <b  style="color: red;">1小时==0.1 <b> <br> <b  style="color: red;">2小时==0.2 <b><br> <b  style="color: red;">大于 1 则 单位为 天<b> <br> <b  style="color: red;">不能带小数如 0.24<b>'
 				});
 				$(".zdydur").eq(0).css("display", "block");
 			} else {

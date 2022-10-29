@@ -249,7 +249,7 @@ function queryuserall($adminpassword, $adminport, $proxyaddress)
     $data = array();
     $query_str = http_build_query($data); // http_build_query()函数的作用是使用给出的关联（或下标）数组生成一个经过 URL-encode 的请求字符串
     $info = parse_url($url);
-    $fp = fsockopen($proxyaddress, $adminport, $errno, $errstr, 10);
+    $fp = fsockopen($proxyaddress, $adminport, $errno, $errstr, 3);
     if (!$fp) {
         // echo "$errstr ($errno)<br>\n";
         return false;
@@ -344,7 +344,7 @@ function WriteLog($operation, $msg, $operationer, $DB)
  * @return {*}
  * @use: 
  */
-function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password, $day,$connection2,$bandwidthup,$bandwidthdown, $userenable="0")
+function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password, $day,$connection2,$bandwidthup,$bandwidthdown, $userenable="0",$newuser="")
 {
     if (!CheckStrChinese($user)) {
         return ["code" => "-1", "msg"=>"用户名不合法", "icon" => "5"];
@@ -371,7 +371,7 @@ function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password,
         $end_date = explode(" ", $end_date);
         $disabledate = $end_date[0];
         $disabletime = $end_date[1];
-        $fp = fsockopen($proxyaddress, $adminport, $errno, $errstr, 10);
+        $fp = fsockopen($proxyaddress, $adminport, $errno, $errstr, 3);
         if (!$fp) {
             return ["code" => "无法连接到CCProxy", "icon" => "5"];
         } else {
@@ -386,7 +386,7 @@ function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password,
             $url = $url . "enableftp=0" . "&";
             $url = $url . "enableothers=0" . "&";
             $url = $url . "enablemail=0" . "&";
-            $url = $url . "username=" . $username . "&";
+            $url = $url . "username=" . (empty($newuser)?$username:$newuser) . "&";
             $url = $password == "" ? "" : $url . "password=" . $password . "&";
             $url = $url . "connection=" . $connection . "&";
             $url = $url . "bandwidth=" . $bandwidth . "&";
@@ -398,7 +398,7 @@ function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password,
                 $url = $url . "enable=1" . "&";
             }
             $url = $url . "userid=" . $username;
-
+            
             $len = "Content-Length: " . strlen($url);
             $auth = "Authorization: Basic " . base64_encode("admin" . ":" . $adminpassword);
             $msg = "POST " . $url_ . " HTTP/1.1\r\nHost: " . $proxyaddress . "\r\n" . $auth . "\r\n" . $len . "\r\n" . "\r\n" . $url;
@@ -519,7 +519,7 @@ function IDelUser($username, $admin_password, $adminport, $proxyaddress)
    try {
     if (!empty($username)) {
         $url = "http://" . $proxyaddress . ":" . $adminport . "/account";
-        $fp = fsockopen($proxyaddress, $adminport, $errno, $errstr, 30);
+        $fp = fsockopen($proxyaddress, $adminport, $errno, $errstr, 3);
         if (!$fp) {
             yield ["code" => "无法连接到CCProxy", "icon" => "5"];
         } else {
@@ -598,7 +598,7 @@ function AddUser($proxyaddress,$admin_password,$admin_port,$userdata)
         $end_date = explode(" ", $enddate);
         $disabledate = $end_date[0];
         $disabletime = $end_date[1];
-        $fp = fsockopen($proxyaddress, $admin_port, $errno, $errstr, 10);
+        $fp = fsockopen($proxyaddress, $admin_port, $errno, $errstr, 3);
         if (!$fp) {
             return ["code" => "-1", "msg"=>"无法连接到CCProxy", "icon" => "5"];
             //return false;

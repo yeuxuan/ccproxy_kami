@@ -36,7 +36,7 @@ include("foot.php");
 					<span class="layui-must">*</span>
 				</label>
                 <div class="layui-input-block">
-				<input type="text" name="ccpusername" class="layui-input" lay-verify="required"  placeholder="CCP登录账号"/>
+				<input type="text" name="ccpusername" class="layui-input" lay-verify="required" value="admin" placeholder="CCP登录账号"/>
 			</div>
             <div class="layui-form-item">
 				<label class="layui-form-label">

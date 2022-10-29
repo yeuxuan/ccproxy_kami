@@ -45,7 +45,16 @@ switch ($act) {
                     "code" => "1",
                     "msg" => "添加成功"
                 ];
+
+                // $cxserver=$DB->selectRow("SELECT applist FROM server_list WHERE ip='".addslashes($server)."'");
+            
+                // $sqlserver="UPDATE server_list set applist='".((empty($cxserver['applist'])?"":$cxserver['applist'].",").$appcode)."' where ip='".addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $server))."' ";
+    
+                // $result = $DB->exe($sqlserver);
+
                 WriteLog("添加用户", "添加了" . $username, $subconf['username'], $DB);
+
+
             } else {
                 $code = [
                     "code" => "-1",
@@ -89,12 +98,43 @@ switch ($act) {
         break;
     case "delapp":
         if (isset($_POST['appcode'])) {
+
+            // $getServer=$DB->select("SELECT id,applist FROM server_list");
+                
+            // foreach($getServer as $item)
+            // {
+            //     $strArr=explode(",",$item["applist"]);
+            //     $applist="";
+            //     foreach($strArr as $app)
+            //     {
+            //         if($app==$_POST['appcode'])
+            //         {
+            //             continue;
+            //         }
+            //         if(!empty($app))
+            //         {
+            //             $applist.=$app;
+            //         }
+            //     }
+            //     $updateServer=$DB->exe("UPDATE server_list SET applist='".$applist."' where id=".$item["id"]."");
+            //     var_dump("UPDATE server_list SET applist='".$applist."' where id=".$item["id"]."");
+            // }
+
             $exesql = $DB->delete("application", "where appcode=\"" . $_REQUEST['appcode'] . "\"");
+
+            
+
             if ($exesql) {
                 $code = [
                     "code" => "1",
                     "msg" => "删除成功"
                 ];
+
+               
+
+               
+
+
                 WriteLog("删除应用", "删除了" . $_REQUEST['appcode'], $subconf['username'], $DB);
                 exit(json_encode($code, JSON_UNESCAPED_UNICODE));
             } else {
@@ -110,7 +150,7 @@ switch ($act) {
         }
         break;
     case "seldel":
-        if (isset($_POST['item'])) {
+        if (!isset($_POST['item'])) {
             $code = [
                 "code" => "-1",
                 "msg" => "删除失败"
@@ -178,11 +218,20 @@ switch ($act) {
         if (isset($_REQUEST['appcode']) && isset($_REQUEST['appname']) && isset($_REQUEST['serverip'])) {
             $sql = "UPDATE application SET appname=\"" . addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $_REQUEST['appname'])) . "\",serverip=\"" . addslashes($_REQUEST['serverip']) . "\" WHERE appcode=\"" . $_REQUEST['appcode'] . "\" ";
             $result = $DB->exe($sql);
+
+            $cxserver=$DB->selectRow("SELECT applist FROM server_list WHERE ip='".addslashes($_REQUEST['serverip'])."'");
+            
+
             if ($result) {
                 $code = [
                     "code" => "1",
                     "msg" => "更新成功！"
                 ];
+                
+                // $sqlserver="UPDATE server_list set applist='".((empty($cxserver['applist'])?"":$cxserver['applist'].",").$_REQUEST['appcode'])."' where ip='".addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $_REQUEST['serverip']))."' ";
+
+                // $result = $DB->exe($sqlserver);
+
                 WriteLog("更新", "更新了" . $_REQUEST['appname'], $subconf['username'], $DB);
                 exit(json_encode($code, JSON_UNESCAPED_UNICODE));
             } else {
@@ -361,16 +410,26 @@ switch ($act) {
                     "kami" => random($_POST["kamilen"] == "" ? 16 : $_POST["kamilen"], $_POST['qianzhui'] == "" ? null : $_POST['qianzhui'])
                 );
             }
+
+            if($_POST["connection"]<=0){
+                $_POST["connection"]=-1;
+            }
+            if($_POST["bandwidthup"]<=0){
+                $_POST["bandwidthup"]=-1;
+            }
+            if($_POST["bandwidthdown"]<=0){
+                $_POST["bandwidthdown"]=-1;
+            }
             $flag = true;
             $ext=[
-                "connection"=>empty($_POST["connection"])?-1:$_POST["connection"],
-                "bandwidthup"=>empty($_POST["bandwidthup"])?-1:$_POST["bandwidthup"]*1024,
-                "bandwidthdown"=>empty($_POST["bandwidthdown"])?-1:$_POST["bandwidthdown"]*1024
+                "connection"=>empty($_POST["connection"])?-1:(int)$_POST["connection"],
+                "bandwidthup"=>empty($_POST["bandwidthup"])?-1:(int)$_POST["bandwidthup"]*1024,
+                "bandwidthdown"=>empty($_POST["bandwidthdown"])?-1:(int)$_POST["bandwidthdown"]*1024
             ];
             foreach ($kami as $key => $ka) {
                 $arr = array(
                     'kami'  => $kami[$key]["kami"],
-                    'times'  => $_POST["duration"] == -1 ? $_POST["kamidur"] : $_POST["duration"],
+                    'times'  => $_POST["duration"] == -1 ? ($_POST["kamidur"]<1?round($_POST["kamidur"],1):$_POST["kamidur"]) : $_POST["duration"],
                     'host'  => $subconf['siteurl'],
                     'sc_user'  => $subconf['username'],
                     'state'  => 0,
@@ -378,7 +437,7 @@ switch ($act) {
                     'comment'  => $_POST["comment"],
                     'ext'=>json_encode($ext)
                 );
-                // print_r($arr);
+                //print_r($arr);
                 $exec = $DB->insert('kami', $arr);
                 if (!$exec) {
                     $flag = false;
@@ -756,9 +815,14 @@ switch ($act) {
                 exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
             }
 
+            if($usermodel["connection"]<=0)
+            {
+                $usermodel["connection"]=-1;
+            }
+
             $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $usermodel['serverip'] . "'"); //$ip['serverip']服务器IP
             //print($server["password"]."".$server["cport"]."".$server["ip"]."".$usermodel["user"]."".$usermodel["pwd"]."".$usermodel["day"]);
-            $result = UserUpdate($server["password"], $server["cport"], $server["ip"], $usermodel["user"], $usermodel["pwd"], $usermodel["day"],$usermodel["connection"],$usermodel["bandwidthup"]*1024,$usermodel["bandwidthdown"]*1024);
+            $result = UserUpdate($server["password"], $server["cport"], $server["ip"], $usermodel["olduser"], $usermodel["pwd"], $usermodel["day"],$usermodel["connection"],$usermodel["bandwidthup"]<=0?-1:$usermodel["bandwidthup"]*1024,$usermodel["bandwidthdown"]<=0?-1:$usermodel["bandwidthdown"]*1024,"0",$usermodel["newuser"]);
             WriteLog("用户编辑", "编辑了" . $usermodel, $subconf['username'], $DB);
             exit(json_encode($result, JSON_UNESCAPED_UNICODE));
         }
