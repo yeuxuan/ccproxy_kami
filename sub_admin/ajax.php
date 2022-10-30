@@ -411,20 +411,25 @@ switch ($act) {
                 );
             }
 
-            if($_POST["connection"]<=0){
+            if(empty($_POST["connection"])||$_POST["connection"]<=0){
                 $_POST["connection"]=-1;
             }
-            if($_POST["bandwidthup"]<=0){
+            if(empty($_POST["bandwidthup"])||$_POST["bandwidthup"]<=0){
                 $_POST["bandwidthup"]=-1;
+            }else
+            {
+                $_POST["bandwidthup"]*=1024;
             }
-            if($_POST["bandwidthdown"]<=0){
+            if(empty($_POST["bandwidthdown"])||$_POST["bandwidthdown"]<=0){
                 $_POST["bandwidthdown"]=-1;
+            }else{
+                $_POST["bandwidthdown"]*=1024;
             }
             $flag = true;
             $ext=[
                 "connection"=>empty($_POST["connection"])?-1:(int)$_POST["connection"],
-                "bandwidthup"=>empty($_POST["bandwidthup"])?-1:(int)$_POST["bandwidthup"]*1024,
-                "bandwidthdown"=>empty($_POST["bandwidthdown"])?-1:(int)$_POST["bandwidthdown"]*1024
+                "bandwidthup"=>empty($_POST["bandwidthup"])?-1:(int)$_POST["bandwidthup"],
+                "bandwidthdown"=>empty($_POST["bandwidthdown"])?-1:(int)$_POST["bandwidthdown"]
             ];
             foreach ($kami as $key => $ka) {
                 $arr = array(
@@ -622,7 +627,6 @@ switch ($act) {
                     }, array());
                     $user_updata = array();
                     foreach ($result as $key => $value) {
-
                         $getdata = array(
                             "id" => $value['id'],
                             "user" => $value['user'],
@@ -635,8 +639,8 @@ switch ($act) {
                             'serverip' => $value["serverip"],
                             'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname'],
                             "connection"=>$value['connection']==-1?"无限制":$value['connection'],
-                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":$value['bandwidthup']/1024,
-                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":$value['bandwidthdown']/1024
+                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":($value['bandwidthup']<-1?$value['bandwidthup']:$value['bandwidthup']/1024),
+                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":($value['bandwidthdown']<-1?$value['bandwidthdown']:$value['bandwidthdown']/1024)
                         );
                         array_push($user_updata, $getdata);
                     }
@@ -675,14 +679,14 @@ switch ($act) {
                             "pwd" => $value['pwd'],
                             "state" => $value['state'],
                             "pwdstate" => $value['pwdstate'],
-                            "disabletime" => $value['disabletime'],
-                            "expire" => $value['expire'],
+                            "disabletime" => $value['autodisable']==0?'2099-10-13 14:34:26':$value['disabletime'],
+                            "expire" => $value['autodisable']==0?0:$value['expire'],
                             "user" => $value['user'],
                             'serverip' => $value["serverip"],
                             'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname'],
                             "connection"=>$value['connection']==-1?"无限制":$value['connection'],
-                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":$value['bandwidthup']/1024,
-                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":$value['bandwidthdown']/1024
+                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":($value['bandwidthup']<-1?$value['bandwidthup']:$value['bandwidthup']/1024),
+                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":($value['bandwidthdown']<-1?$value['bandwidthdown']:$value['bandwidthdown']/1024)
                         );
                         array_push($user_updata, $getdata);
                     }
@@ -722,14 +726,14 @@ switch ($act) {
                             "pwd" => $value['pwd'],
                             "state" => $value['state'],
                             "pwdstate" => $value['pwdstate'],
-                            "disabletime" => $value['disabletime'],
-                            "expire" => $value['expire'],
+                            "disabletime" => $value['autodisable']==0?'2099-10-13 14:34:26':$value['disabletime'],
+                            "expire" => $value['autodisable']==0?0:$value['expire'],
                             "user" => $value['user'],
                             'serverip' => $value["serverip"],
                             'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname'],
                             "connection"=>$value['connection']==-1?"无限制":$value['connection'],
-                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":$value['bandwidthup']/1024,
-                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":$value['bandwidthdown']/1024
+                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":($value['bandwidthup']<-1?$value['bandwidthup']:$value['bandwidthup']/1024),
+                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":($value['bandwidthdown']<-1?$value['bandwidthdown']:$value['bandwidthdown']/1024)
                         );
                         array_push($user_updata, $getdata);
                     }
@@ -768,14 +772,14 @@ switch ($act) {
                             "pwd" => $value['pwd'],
                             "state" => $value['state'],
                             "pwdstate" => $value['pwdstate'],
-                            "disabletime" => $value['disabletime'],
-                            "expire" => $value['expire'],
+                            "disabletime" => $value['autodisable']==0?'2099-10-13 14:34:26':$value['disabletime'],
+                            "expire" => $value['autodisable']==0?0:$value['expire'],
                             "user" => $value['user'],
                             'serverip' => $value["serverip"],
                             'appname' => $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'")['appname'],
                             "connection"=>$value['connection']==-1?"无限制":$value['connection'],
-                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":$value['bandwidthup']/1024,
-                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":$value['bandwidthdown']/1024
+                            "bandwidthup"=>$value['bandwidthup']==-1?"无限制":($value['bandwidthup']<-1?$value['bandwidthup']:$value['bandwidthup']/1024),
+                            "bandwidthdown"=>$value['bandwidthdown']==-1?"无限制":($value['bandwidthdown']<-1?$value['bandwidthdown']:$value['bandwidthdown']/1024)
                         );
                         array_push($user_updata, $getdata);
                     }
