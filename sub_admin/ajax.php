@@ -7,8 +7,6 @@ if ($islogin == 1) {
 $act = isset($_GET['act']) ? daddslashes($_GET['act']) : null;
 @header('Content-Type: application/json; charset=UTF-8');
 
-//ajax.php?act=getfakatool
-
 switch ($act) {
     case 'getserver':
         $sql = 'select id,ip,comment from server_list where username=\'' . $subconf['username'] . '\' ';
