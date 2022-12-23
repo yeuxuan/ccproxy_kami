@@ -26,8 +26,6 @@ if (!($islogin == 1)) {
 	<?php
 	include("foot.php");
 	?>
-	<!-- <link rel="stylesheet" href="https://www.layuicdn.com/layui/css/layui.css?v=20201111001" />
-	<link rel="stylesheet" type="text/css" href="./css/theme.css?v=20201111001" /> -->
 </head>
 
 <body>
@@ -50,15 +48,6 @@ if (!($islogin == 1)) {
 						<option value="*">全部服务器</option>
 					</select>
 				</div>
-				<!-- <label class="layui-form-label layui-hide" title="创建时间">
-						到期时间
-					</label> -->
-				<!-- <div class="layui-input-inline layui-hide">
-						<input type="text" name="found_date" class="layui-input" placeholder="YYYY-MM-DD" />
-					</div> -->
-				<!-- <span>
-						注意:如果操作不生效请检查远程服务器的配置文件web/api.php CCProxy密码是否正确！
-					</span> -->
 			</div>
 		</div>
 	</div>
@@ -69,7 +58,6 @@ if (!($islogin == 1)) {
 		</div>
 	</div>
 </body>
-<!-- <script src="https://www.layuicdn.com/layui/layui.js?v=20201111001"></script> -->
 <script type="text/html" id="userTool">
 	<div class="layui-btn-container">
 		<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="search"><i class="layui-icon layui-icon-search"></i><span>搜索</span></button>
@@ -115,12 +103,11 @@ if (!($islogin == 1)) {
 	</div>
 </script>
 <script>
-	layui.use(["jquery", "table", "laydate", "form", "upload", "element"], function() {
+	layui.use(["jquery", "table", "laydate", "form", "element"], function() {
 		var $ = layui.$,
 			table = layui.table,
 			laydate = layui.laydate,
 			form = layui.form,
-			upload = layui.upload,
 			element = layui.element;
 		window.where = function() {
 			var data = ["server", "appname", "password", "token", "found_date", "code", "user_key", "secret", "notify_url",

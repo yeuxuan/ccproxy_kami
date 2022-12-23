@@ -11,8 +11,6 @@
 
 include("../includes/common.php");
 @header('Content-Type: application/json; charset=UTF-8');
-// header("Content-type:text/html;charset=utf-8");
-// header("Access-Control-Allow-Origin: *");
 
 if (isset($_REQUEST["type"])) {
     $type = $_REQUEST["type"];
@@ -61,9 +59,6 @@ function checkquery($DB)
                 "msg" => userquer($_POST["user"], $ser)
             ];
         }
-
-        // $json=$sql;
-        //print_r($server);
     } else {
         $json = ["code" => "非法参数", "icon" => "5"];
     }
@@ -92,13 +87,13 @@ function checkinsert($DB)
                         "msg" => "账号已经存在"
                     ];
                 } else {
-                    $msg = insert($proxyaddress, $admin_username, $admin_password, $admin_port, $kami['times'], $_POST["user"], $_POST["pwd"],$kami['ext']);
+                    $msg = insert($proxyaddress, $admin_username, $admin_password, $admin_port, $kami['times'], $_POST["user"], $_POST["pwd"], $kami['ext']);
                     if ($msg["icon"] == 1) {
                         $usr = array(
                             'state' => 1,
                             'username' => $_POST["user"],
                             'use_date' => date("Y-m-d H:i:s"),
-                            'end_date' => date('Y-m-d H:i:s', strtotime("$date + " . $kami['times'] . " day"))
+                            'end_date' => (date('Y-m-d H:i:s', strtotime($date . $kami['times'])))=="1970-01-01 08:00:00"?date('Y-m-d H:i:s', strtotime($date . "+1 day")):date('Y-m-d H:i:s', strtotime($date . $kami['times']))
                         );
                         $exec = $DB->update('kami', $usr, "kami=\"" . $_POST["code"] . "\"");
                         $json = [
@@ -170,13 +165,14 @@ function checkupdate($DB)
                     } else {
                         $json = [
                             "code" => 1,
-                            "msg" => update($proxyaddress, $admin_username, $admin_password, $admin_port, $kami['times'], $date,$kami["ext"])
+                            "msg" => update($proxyaddress, $admin_username, $admin_password, $admin_port, $kami['times'], $date, $kami["ext"])
                         ];
                         $usr = array(
                             'state' => 1,
                             'username' => $_POST["user"],
-                            'use_date' => date("Y-m-d H:i:s"),
-                            'end_date' => $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . $kami['times']>0&&$kami['times']<1?((int)($kami['times']*10)) . " hours":((int)$kami['times']) . " day")) : date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") . $kami['times']>0&&$kami['times']<1?((int)($kami['times']*10)) . " hours ":((int)$kami['times']) . " day"))
+                            'use_date' => date("Y-m-d H:i:s"),//"1970-01-01 08:00:00" date('Y-m-d H:i:s', strtotime($date['disabletime'] . $kami['times']))
+                            'end_date' => $date['expire'] == 0 ? (date('Y-m-d H:i:s', strtotime($date['disabletime'] . $kami['times']))=="1970-01-01 08:00:00"?date('Y-m-d H:i:s', strtotime($date['disabletime'] . "+1 day")):date('Y-m-d H:i:s', strtotime($date['disabletime'] . $kami['times']))) : (date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") . $kami['times']))=="1970-01-01 08:00:00"?date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") ."+1 day")):date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") . $kami['times'])))
+                            //'end_date' => $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . $kami['times']>0&&$kami['times']<1?((int)($kami['times']*10)) . " hours":((int)$kami['times']) . " day")) : date('Y-m-d H:i:s', strtotime(date("Y-m-d H:i:s") . $kami['times']>0&&$kami['times']<1?((int)($kami['times']*10)) . " hours ":((int)$kami['times']) . " day"))
                         );
                         $exec = $DB->update('kami', $usr, "kami='" . $_POST["code"] . "'");
                     }
@@ -205,7 +201,7 @@ function checkupdate($DB)
  * 添加具体方法
  */
 
-function insert($proxyaddress, $admin_username, $admin_password, $admin_port, $day, $user, $pwd,$ext)
+function insert($proxyaddress, $admin_username, $admin_password, $admin_port, $day, $user, $pwd, $ext)
 {
     $username = $user;
     $password = $pwd;
@@ -228,17 +224,26 @@ function insert($proxyaddress, $admin_username, $admin_password, $admin_port, $d
     if ($is) {
         $ipaddress = "";
         $macaddress = "";
-        $connection = json_decode($ext,true)["connection"];
-        $bandwidth = json_decode($ext,true)["bandwidthup"]."/".json_decode($ext,true)["bandwidthdown"];
+        $connection = json_decode($ext, true)["connection"];
+        $bandwidth = json_decode($ext, true)["bandwidthup"] . "/" . json_decode($ext, true)["bandwidthdown"];
         $date = date("Y-m-d H:i:s");
-        $enddate = date('Y-m-d H:i:s', strtotime("$date + " . $day>0&&$day<1?(int)($day*10) ." hours":((int)$day) . " day"));
+        $enddate = "";
+
+        try {
+            $enddate= date('Y-m-d H:i:s', strtotime("$date $day"));
+        } catch (Exception $e)
+        {
+            $enddate= date('Y-m-d H:i:s', strtotime("$date +1 day"));
+        }
+
+        if($enddate=="1970-01-01 08:00:00"){
+            $enddate= date('Y-m-d H:i:s', strtotime("$date +1 day"));
+        }
+
+        //$enddate = date('Y-m-d H:i:s', strtotime("$date + " . $day>0&&$day<1?(int)($day*10) ." hours":((int)$day) . " day"));
         $end_date = explode(" ", $enddate);
         $disabledate = $end_date[0];
         $disabletime = $end_date[1];
-        // $admin_username = $_REQUEST["admin_username"];
-        // $admin_password = $_REQUEST["admin_password"];
-        // $adminport = $_REQUEST["admin_port"];
-        // $proxyaddress = $_REQUEST["proxyaddress"];
         $fp = fsockopen($proxyaddress, $admin_port, $errno, $errstr, 30);
         if (!$fp) {
             // return ["code" => "无法连接到CCProxy", "icon" => "5"];
@@ -257,22 +262,6 @@ function insert($proxyaddress, $admin_username, $admin_password, $admin_port, $d
             if ($macaddress != "") {
                 $url = $url . "usemacaddress=1" . "&";
             }
-            // if (strlen($admin_password) > 0) {
-
-            // } else {
-            //     $url = $url . "usepassword=0" . "&";
-            // }
-            // if (strlen($ipaddress) > 0) {
-            //     $url = $url . "useipaddress=1" . "&";
-            // } else {
-            //     $url = $url . "useipaddress=0" . "&";
-            // }
-            // if (strlen($macaddress) > 0) {
-            //     $url = $url . "usemacaddress=1" . "&";
-            // } else {
-            //     $url = $url . "usemacaddress=0" . "&";
-            // }
-
             $url = $url . "enablesocks=1" . "&";
             $url = $url . "enablewww=0" . "&";
             $url = $url . "enabletelnet=0" . "&";
@@ -331,10 +320,8 @@ function del()
             $auth = "Authorization: Basic " . base64_encode($admin_username . ":" . $admin_password);
             $msg = "POST " . $url_ . " HTTP/1.0\r\nHost: " . $proxyaddress . "\r\n" . $auth . "\r\n" . $len . "\r\n" . "\r\n" . $url;
             fputs($fp, $msg);
-            //echo $msg;
             while (!feof($fp)) {
                 $s = fgets($fp, 4096);
-                //echo $s;
             }
             fclose($fp);
             return ["code" => "删除用户成功", "icon" => "1"];
@@ -346,7 +333,7 @@ function del()
 /**
  * 更新方法
  */
-function update($proxyaddress, $admin_username, $admin_password, $admin_port, $day, $date,$ext)
+function update($proxyaddress, $admin_username, $admin_password, $admin_port, $day, $date, $ext)
 {
     if (!CheckStrChinese($admin_username)) {
         return ["code" => "-1", "msg" => "用户名不合法", "icon" => "5"];
@@ -363,22 +350,31 @@ function update($proxyaddress, $admin_username, $admin_password, $admin_port, $d
     }
     if ($is) {
         $username = $_POST["user"];
-        // $password = $_REQUEST["password"];
-        $connection = json_decode($ext,true)["connection"];
-        $bandwidth = json_decode($ext,true)["bandwidthup"]."/".json_decode($ext,true)["bandwidthdown"];
+        $connection = json_decode($ext, true)["connection"];
+        $bandwidth = json_decode($ext, true)["bandwidthup"] . "/" . json_decode($ext, true)["bandwidthdown"];
         $cdate = date("Y-m-d H:i:s");
         // var_dump($date['expire'],$date['disabletime']);
-         // 0 未到期 1 到期
-        $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . ($day>0&&$day<1?((int)$day*10) . " hours":((int)$day) . " day"))) : date('Y-m-d H:i:s', strtotime($cdate . $day . " day"));
+        // 0 未到期 1 到期
+        //$enddate = date('Y-m-d H:i:s', strtotime("$date $day"));
+        $enddate = "";
+        try{
+            $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . $day)) : date('Y-m-d H:i:s', strtotime($cdate . $day));
+        }catch(Exception $e){    // $e 为一个异常类的对象
+        
+            $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . "+1 day")) : date('Y-m-d H:i:s', strtotime($cdate . "+1 day"));
+            
+        }
+
+        if($enddate=="1970-01-01 08:00:00")
+        {
+            $enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . "+1 day")) : date('Y-m-d H:i:s', strtotime($cdate . "+1 day"));
+        }
+
+        //$enddate = $date['expire'] == 0 ? date('Y-m-d H:i:s', strtotime($date['disabletime'] . ($day>0&&$day<1?((int)$day*10) . " hours":((int)$day) . " day"))) : date('Y-m-d H:i:s', strtotime($cdate . $day . " day"));
         // $enddate=date('Y-m-d H:i:s',strtotime("$date + ".$day." day"));
         $end_date = explode(" ", $enddate);
         $disabledate = $end_date[0];
         $disabletime = $end_date[1];
-
-        // $admin_username = $_REQUEST["admin_username"];
-        // $admin_password = $_REQUEST["admin_password"];
-        // $adminport = $_REQUEST["admin_port"];
-        // $proxyaddress = $_REQUEST["proxyaddress"];
         $fp = fsockopen($proxyaddress, $admin_port, $errno, $errstr, 30);
         if (!$fp) {
             return ["code" => "无法连接到CCProxy", "icon" => "5"];
@@ -466,16 +462,8 @@ function query($adminpassword, $adminport, $proxyaddress)
     $ccp = array();
     $time = date("Y-m-d H:i:s");
     foreach ($match[1] as $key => $use) {
-
-
-        //  str_replace(array("<",">","/"),array(""),$match3[0][$key])=='input type="checkbox" name="enable" value="1" checked=""'?$match3[0][$key]=0:$match3[0][$key]=1;
-        //  str_replace(array("<",">","/"),array(""),$match4[0][$key])=='input type="checkbox" name="usepassword" value="1" checked=""'?$match4[0][$key]=0:$match4[0][$key]=1;
-        //  str_replace(array("<",">","/"),array(""),$match7[0][$key])=='input type="checkbox" name="autodisable" value="1" checked=""'?$match7[0][$key]=0:$match7[0][$key]=1;
-
-        // print(str_replace(array("<",">","/"),array(""),$match3[0][$key]));
-        //=='input type="checkbox" name="enable" value="1" checked'?$match3[0][$key]=0:$match3[0][$key]=1
+        // 替换 < > 为空 并赋值为 1
         strripos(str_replace(array("<", ">", "/"), array(""), $match3[0][$key]), "checked") != "46" ? $match3[0][$key] = 0 : $match3[0][$key] = 1;
-        //str_replace(array("<",">","/"),array(""),$match3[0][$key])=='input type="checkbox" name="enable" value="1" checked'?$match3[0][$key]=0:$match3[0][$key]=1;
         strripos(str_replace(array("<", ">", "/"), array(""), $match4[0][$key]), "checked") != "51" ? $match4[0][$key] = 0 : $match4[0][$key] = 1;
         strripos(str_replace(array("<", ">", "/"), array(""), $match7[0][$key]), "checked") != "51" ? $match7[0][$key] = 0 : $match7[0][$key] = 1;
 
@@ -491,34 +479,35 @@ function query($adminpassword, $adminport, $proxyaddress)
     return $ccp;
 }
 
+/**
+ * 查询用户信息
+ */
 function userquer($column, $ccp)
 {
     if (empty($column)) {
         return "不能为空！";
     }
-    //    ="admin";
     $result = array_filter($ccp, function ($where) use ($column) {
         return $where['user'] == $column;
     });
-    // print_r($result);//打印全部数组
-    $col = array_column($result, 'disabletime'); //expire
+    $col = array_column($result, 'disabletime');
+    //expire
     $col2 = array_column($result, 'expire');
-    // return $result;
     return $col2[0] == 1 ? '<h5 style="color: red;display: inline;">到期时间：' . $col[0] . '</h5>' : ($col[0] != "" ? '<h5 style="color: #1E9FFF;display: inline;">到期时间：' . $col[0] . '</h5>' : '<h5 style="color: red;display: inline;">账号不存在</h5>');
 }
 
 
-
+/**
+ * 更新用户信息
+ */
 function updatequer($column, $ccp)
 {
     if (empty($column)) {
         return "不能为空！";
     }
-    //    ="admin";
     $result = array_filter($ccp, function ($where) use ($column) {
         return $where['user'] == $column;
     });
-    // print_r($result);//打印全部数组
     $col = array_column($result, 'disabletime'); //expire
     $col2 = array_column($result, 'expire'); //expire
     return ["disabletime" => $col[0], "expire" => $col2[0]];

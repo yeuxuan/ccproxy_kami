@@ -265,8 +265,8 @@ layui.define(["element", "layer"], function (exports) {
 
 	function recordTab(){
 		 var tabindex=getCookie("tab");
-		 console.log(tabindex);
-		if(tabindex == ""||tabindex ==undefined){
+		 //console.log(tabindex);
+		if(tabindex == ""||tabindex ==undefined||tabindex=='javascript%3A%3B'){
 			$("a[href='primary.php']").trigger("click");
 			$("a[href='primary.php']").parent().attr("class", "layui-this");
 		}else{
@@ -275,23 +275,23 @@ layui.define(["element", "layer"], function (exports) {
 		}
 	}
 
-	function int() {
-		$.ajax({
-			url: "php/admin.php",
-			type: "POST",
-			dataType: "json",
-			success: function (data) {
-				console.log(data);
-				$("#username").text(data.data.username);
-			},
-			error: function (data) {
-				console.log(data);
-				layer.msg(data.responseText, {
-					icon: 5
-				});
-			}
-		});
-	}
+	// function int() {
+	// 	$.ajax({
+	// 		url: "php/admin.php",
+	// 		type: "POST",
+	// 		dataType: "json",
+	// 		success: function (data) {
+	// 			console.log(data);
+	// 			$("#username").text(data.data.username);
+	// 		},
+	// 		error: function (data) {
+	// 			console.log(data);
+	// 			layer.msg(data.responseText, {
+	// 				icon: 5
+	// 			});
+	// 		}
+	// 	});
+	// }
 	//int();
 	recordTab();
 });

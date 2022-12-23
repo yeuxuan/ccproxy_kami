@@ -871,17 +871,57 @@ function x_real_ip()
 }
 
 
+/* 
 
+* 方法 isDate 
 
+* 功能 判断日期格式是否正确 
 
+* 参数 $str 日期字符串 
 
+$format 日期格式 
 
+* 返回 无 
 
+*/
+function is_Date($str,$format='Y-m-d H:i:s',$split='-'){ 
 
+    $validStr=explode($split,explode(" ",$str)[0]);
 
+    if(intval($validStr[0])<=0) return false; 
 
+    if(intval($validStr[1])<=0) return false; 
 
+    if(intval($validStr[2])<=0) return false; 
 
+    $unixTime_1=strtotime($str); 
+
+    if(!is_numeric($unixTime_1)) return false; //如果不是数字格式，则直接返回 
+
+    $checkDate=date($format,$unixTime_1); 
+
+    $unixTime_2=strtotime($checkDate); 
+
+    if($unixTime_1==$unixTime_2){ 
+
+        return true; 
+
+    }else{ 
+
+        return false; 
+
+    } 
+
+}
+
+/**
+ * 转换卡密时长为汉字
+ */
+function KamiPaeseString($str)
+{
+    $res=str_replace(array("+", " ", "year", "month", "day", "hour"), array("", "", "年","月","天","时"), $str);
+    return $res;
+}
 
 
 ?>

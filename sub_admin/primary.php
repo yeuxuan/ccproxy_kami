@@ -16,7 +16,7 @@ if (!($islogin == 1)) {
 	include("foot.php");
 	?>
 
-	<meta name="viewport" content="width=device-width, initial-1.0" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 	<link rel="stylesheet" type="text/css" href="./css/theme.css" />
 	<link rel="stylesheet" type="text/css" href="./css/home.css" />
 </head>
@@ -572,6 +572,8 @@ if (!($islogin == 1)) {
 				lineStyle: {
 					width: 0
 				},
+				zlevel: 1,
+                z: 1,
 				showSymbol: false,
 				areaStyle: {
 					opacity: 0.8,
@@ -598,6 +600,8 @@ if (!($islogin == 1)) {
 				lineStyle: {
 					width: 0
 				},
+				zlevel: 2,
+                z: 2,
 				showSymbol: false,
 				areaStyle: {
 					opacity: 0.8,
@@ -624,6 +628,8 @@ if (!($islogin == 1)) {
 				lineStyle: {
 					width: 0
 				},
+				zlevel: 3,
+                z: 3,
 				showSymbol: false,
 				areaStyle: {
 					opacity: 0.8,
@@ -650,6 +656,8 @@ if (!($islogin == 1)) {
 				lineStyle: {
 					width: 0
 				},
+				zlevel: 4,
+                z: 4,
 				showSymbol: false,
 				areaStyle: {
 					opacity: 0.8,
@@ -681,6 +689,8 @@ if (!($islogin == 1)) {
 					show: true,
 					position: 'top'
 				},
+				zlevel: 5,
+                z: 5,
 				areaStyle: {
 					opacity: 0.8,
 					color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
@@ -701,13 +711,29 @@ if (!($islogin == 1)) {
 		]
 	};
 
-
+	
 
 	if (option && typeof option === 'object') {
 		myChart.setOption(option);
+		setInterval(async function(){
+			for (let index = 0; index < option.series.length; index++) {
+				option.series[index].data=Random();
+			}
+			myChart.setOption(option);
+		},3000);
 	}
 
 	window.addEventListener('resize', myChart.resize);
+
+
+	function Random(){
+		var array=[];
+		for (let index = 0; index < 7; index++) {
+			array.push(Math.round(Math.random()*80+20));
+		}
+		return array;
+	}
+
 </script>
 
 </html>

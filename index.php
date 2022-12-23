@@ -518,6 +518,18 @@ include("./includes/common.php");
                 text: "没有公告"
             });
         }
+
+       function CheckHeight(){
+           let el=document.getElementsByClassName("layui-tab-title")[0].getElementsByTagName("li");
+            if(window.screen.width<330){
+                for (let index = 0; index <  el.length; index++) {
+                    el[index].innerText=el[index].innerText.substring(2,el[index].innerText.length);
+                    el[index].style.paddingLeft=0;
+                    el[index].style.paddingRight=0;
+                }
+            }
+       }
+       CheckHeight();
     </script>
 </body>
 

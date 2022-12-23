@@ -167,7 +167,7 @@ include("foot.php");
 							sort: true
 						}, {
 							field: "times",
-							title: "时长（天）",
+							title: "时长",
 							width: 120,
 							align: "center",
 							sort: true
@@ -191,16 +191,10 @@ include("foot.php");
 							sort: true
 						},  {
 							field: "use_date",
-							title: "使用时间",
+							title: "卡密使用时间",
 							width: 170,
 							align: "center",
 							sort: true
-						}, {
-							field: "end_date",
-							title: "到期时间",
-							sort: true,
-							align: "center",
-							width: 170
 						}, {
 							field: "state",
 							title: "状态",

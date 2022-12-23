@@ -81,10 +81,13 @@ switch ($act) {
             $sqlj .= $_REQUEST['appname'] != "" ? " and appname LIKE '%" . $_REQUEST["appname"] . "%'" : "";
             //  $sqlj .= $_REQUEST['appname'] != "" ? " and appname=\"" . $_REQUEST['appname'] . "\"" : "";
             $sql = 'SELECT appid,appcode,appname,serverip,found_time FROM application where username=\'' . $subconf['username'] . '\' ' . $sqlj . ' ';
+           
             // // $DB->pageNo=$_REQUEST['page'];当前页码
             // //$DB->pageRows=$_REQUEST['limit'];多少行数
             $countpage = $DB->selectRow("select count(*) as num from application where username=\"" . $subconf['username'] . "\"");
+           
             $app = $DB->selectPage($sql, $DB->pageNo = $_REQUEST['page'], $DB->pageRows = $_REQUEST['limit']);
+            
             foreach ($app as $key => $apps) {
                 $app[$key]['appid'] = $key + 1;
             }
@@ -378,6 +381,7 @@ switch ($act) {
                 } else {
                     $app[$key]['state'] = "<span style='color:green'>未激活</span>";
                 }
+                $app[$key]['times']=KamiPaeseString($app[$key]['times']);
             }
 
             $json = ["code" => "0", "count" => $countpage['num'], "data" => $app, "icon" => "1"];
@@ -393,15 +397,61 @@ switch ($act) {
             // $result=$DB->exe($sql);
 
             if(!empty($_POST["connection"])&&!is_numeric($_POST["connection"])){
-                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => ""], JSON_UNESCAPED_UNICODE));
             }
 
             if(!empty($_POST["bandwidthup"])&&!is_numeric($_POST["bandwidthup"])){
-                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => ""], JSON_UNESCAPED_UNICODE));
             }
 
             if(!empty($_POST["bandwidthdown"])&&!is_numeric($_POST["bandwidthdown"])){
-                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => $kami], JSON_UNESCAPED_UNICODE));
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "输入类型错误",  "kami" => ""], JSON_UNESCAPED_UNICODE));
+            }
+
+            if(!empty($_POST["kamidur"])){
+                if(intval($_POST["kamidur"])<1){
+                    exit(json_encode( $code = [ "code" => "-1",  "msg" => "自定义时长不能小于1,也不能为小数！",  "kami" => ""], JSON_UNESCAPED_UNICODE));
+                }
+                $vlidnum=count(explode(".",$_POST["kamidur"]));
+                
+                if( $vlidnum>=2)
+                {
+                    exit(json_encode( $code = [ "code" => "-1",  "msg" => "自定义时长不能为小数！",  "kami" => ""], JSON_UNESCAPED_UNICODE));
+                }
+
+            }
+
+            $kamidurdangwei="+".intval((!empty($_POST["kamidur"])?$_POST["kamidur"]:$_POST["duration"]));
+
+            $kamicount=0;
+
+            if(isset($_POST["year"]) && $_POST["year"]=="on")
+            {
+                $kamidurdangwei.=" year";
+                $kamicount++;
+            }
+
+            if(isset($_POST["month"]) && $_POST["month"]=="on")
+            {
+                $kamidurdangwei.=" month";
+                $kamicount++;
+            }
+
+            if(isset($_POST["day"]) && $_POST["day"]=="on")
+            {
+                $kamidurdangwei.=" day";
+                $kamicount++;
+            }
+
+            if(isset($_POST["hour"]) && $_POST["hour"]=="on")
+            {
+                $kamidurdangwei.=" hour";
+                $kamicount++;
+            }
+
+            if($kamicount!=1)
+            {
+                exit(json_encode( $code = [ "code" => "-1",  "msg" => "请选择卡密类型",  "kami" => ""], JSON_UNESCAPED_UNICODE));
             }
 
             $kami = array();
@@ -434,7 +484,8 @@ switch ($act) {
             foreach ($kami as $key => $ka) {
                 $arr = array(
                     'kami'  => $kami[$key]["kami"],
-                    'times'  => $_POST["duration"] == -1 ? ($_POST["kamidur"]<1?round($_POST["kamidur"],1):$_POST["kamidur"]) : $_POST["duration"],
+                    'times'  => $kamidurdangwei,
+                    //'times'  => $_POST["duration"] == -1 ? ($_POST["kamidur"]<1?round($_POST["kamidur"],1):$_POST["kamidur"]) : $_POST["duration"],
                     'host'  => $subconf['siteurl'],
                     'sc_user'  => $subconf['username'],
                     'state'  => 0,
@@ -912,10 +963,6 @@ switch ($act) {
         exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         break;
     case "siteinfo":
-        // $scheduler = new Scheduler;
-        // $scheduler->addTask(SerchearchAllServer("", "", $DB));
-        // var_dump($scheduler->run());
-
         $ser = SerchearchAllServer("", "", $DB);
         $user_data = array();
         while ($ser->valid()) {
@@ -952,10 +999,20 @@ switch ($act) {
             }
             if($flag){
 
-                if(!(ValidIp($data["serverip"]) && ValidPort($data["cport"]))){
+                if((count(explode(".",$data["serverip"]))<=0))
+                {
                     $json = [
                         "code" => "-1",
-                        "msg" => "输入了错误的IP或者端口号",
+                        "msg" => "输入了错误的域名或者IP",
+                        "icon"=>"5"
+                    ];
+                    exit(json_encode($json, JSON_UNESCAPED_UNICODE));
+                }
+
+                if(!ValidPort($data["cport"])){
+                    $json = [
+                        "code" => "-1",
+                        "msg" => "输入了错误的端口号",
                         "icon"=>"5"
                     ];
                     exit(json_encode($json, JSON_UNESCAPED_UNICODE));

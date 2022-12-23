@@ -27,7 +27,12 @@ if (!($islogin == 1)) {
 			color: red;
 			font-size: 25px;
 		}
-		#extparm{
+
+		#extparm {
+			display: none;
+		}
+
+		.kamitype {
 			display: none;
 		}
 	</style>
@@ -80,13 +85,26 @@ if (!($islogin == 1)) {
 			</select>
 		</div>
 	</div>
+	<div class="layui-form-item kamitype">
+		<label class="layui-form-label">
+			卡密类型
+			<span class="layui-must">*</span>
+		</label>
+		<div class="layui-input-block" style="text-align:left;">
+			<input type="checkbox" name="year" lay-filter="kamitype" title="年">
+			<input type="checkbox" name="month" lay-filter="kamitype" title="月">
+			<input type="checkbox" name="day" lay-filter="kamitype" title="天" checked>
+			<input type="checkbox" name="hour" lay-filter="kamitype" title="时">
+		</div>
+	</div>
+
 	<div class="layui-form-item zdydur">
 		<label class="layui-form-label">
 			自定义时长
 			<span class="layui-must">*</span>
 		</label>
 		<div class="layui-input-block">
-			<input type="text" name="kamidur" class="layui-input" placeholder="自定义时长">
+			<input type="text" name="kamidur" class="layui-input" placeholder="自定义时长（年/月/天/时）">
 		</div>
 	</div>
 	<div class="layui-form-item">
@@ -108,20 +126,20 @@ if (!($islogin == 1)) {
 	</div>
 	<div id="extparm">
 		<div class="layui-form-item">
-		<label class="layui-form-label">
-			连接数
-		</label>
-		<div class="layui-input-block">
-			<input type="text" name="connection" class="layui-input" placeholder="为空则为无限制">
-		</div>
+			<label class="layui-form-label">
+				连接数
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="connection" class="layui-input" placeholder="为空则为无限制">
+			</div>
 		</div>
 		<div class="layui-form-item">
-		<label class="layui-form-label">
-			上行带宽
-		</label>
-		<div class="layui-input-block">
-			<input type="text" name="bandwidthup" class="layui-input" placeholder="为空则为无限制 单位MS">
-		</div>
+			<label class="layui-form-label">
+				上行带宽
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="bandwidthup" class="layui-input" placeholder="为空则为无限制 单位MS">
+			</div>
 		</div>
 		<label class="layui-form-label">
 			下行带宽
@@ -129,7 +147,7 @@ if (!($islogin == 1)) {
 		<div class="layui-input-block">
 			<input type="text" name="bandwidthdown" class="layui-input" placeholder="为空则为无限制 单位MS">
 		</div>
-		</div>
+	</div>
 	</div>
 	<div class="layui-form-item">
 		<label class="layui-form-label">
@@ -144,7 +162,7 @@ if (!($islogin == 1)) {
 			卡密复制
 		</label>
 		<div class="layui-input-block" style="text-align:left;">
-			<input type="checkbox" name="copy" title="卡密复制" checked>
+			<input type="checkbox" name="copy" title="复制卡密" checked>
 		</div>
 	</div>
 	<div class="layui-form-item">
@@ -163,15 +181,16 @@ if (!($islogin == 1)) {
 		form.on('select(duration)', function(data) {
 			// console.log(data.value==-1?$(da):)
 			if (data.value == -1) {
-				layer.open({
-					title: 'Tips',
-					content: '自定义默认单位是天，如需要其他时间请换算！<br> <b  style="color: red;">1小时==0.1 <b> <br> <b  style="color: red;">2小时==0.2 <b><br> <b  style="color: red;">大于 1 则 单位为 天<b> <br> <b  style="color: red;">不能带小数如 0.24<b>'
-				});
+				// layer.open({
+				// 	title: 'Tips',
+				// 	content: '自定义默认单位是天，如需要其他时间请换算！<br> <b  style="color: red;">1小时==0.1 <b> <br> <b  style="color: red;">2小时==0.2 <b><br> <b  style="color: red;">大于 1 则 单位为 天<b> <br> <b  style="color: red;">不能带小数如 0.24<b>'
+				// });
 				$(".zdydur").eq(0).css("display", "block");
+				$(".kamitype").eq(0).css("display", "block");
 			} else {
 				$(".zdydur").eq(0).css("display", "none");
+				$(".kamitype").eq(0).css("display", "none");
 			}
-
 			// var duration = Number(data.value);
 			// var price = duration * unit;
 		});
@@ -179,9 +198,31 @@ if (!($islogin == 1)) {
 		form.on('checkbox(ext)', function(e) {
 			if (e.elem.checked) { //判断当前多选框是选中还是取消选中
 				$("#extparm").eq(0).css("display", "block");
-			}else{
+			} else {
 				$("#extparm").eq(0).css("display", "none");
 			}
+		});
+
+
+		/**
+		 * 复选框变单选框
+		 */
+		form.on('checkbox(kamitype)', function(e) {
+			var flag = 0;
+			$("[lay-filter='kamitype']").each(function(e) {
+				if ($(this).prop("checked")) {
+					flag++;
+				}
+			});
+			if (flag > 1) {
+				$(this).parent().find(".layui-form-checked").each(function(e){
+					$(this).removeClass("layui-form-checked");
+					$(this).prev().removeAttr("checked")
+				});
+				$(this).prop("checked",true);
+				flag=0;
+			}
+			form.render("checkbox");
 		});
 
 

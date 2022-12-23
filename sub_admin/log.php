@@ -96,7 +96,7 @@ include("foot.php");
 				var json = {};
 				for (var key in data) {
 					json[data[key]] = query(data[key]);
-					console.log(query(data[key]))
+					//console.log(query(data[key]))
 				}
 				return json;
 			}

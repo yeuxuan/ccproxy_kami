@@ -30,7 +30,7 @@ include("foot.php");
 						<input type="text" name="user" class="layui-input" />
 					</div>
 					<label class="layui-form-label" title="应用">
-						应用
+						应用：
 					</label>
 					<div class="layui-input-inline">
 						<select name="app" lay-filter="state">
