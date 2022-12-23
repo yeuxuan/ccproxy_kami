@@ -292,10 +292,20 @@ switch ($act) {
         }
       
         if ($flag) {
-            if(!(ValidIp($serverip) && ValidPort($ccpport))){
+            $valid=count(explode(".",$serverip));
+            if($valid<2){
                 $json = [
                     "code" => "-1",
-                    "msg" => "输入了错误的IP或者端口号",
+                    "msg" => "输入了错误的IP或者域名",
+                    "icon"=>"5"
+                ];
+                exit(json_encode($json, JSON_UNESCAPED_UNICODE));
+            }
+
+            if(!ValidPort($ccpport)){
+                $json = [
+                    "code" => "-1",
+                    "msg" => "输入了错误的端口号",
                     "icon"=>"5"
                 ];
                 exit(json_encode($json, JSON_UNESCAPED_UNICODE));
