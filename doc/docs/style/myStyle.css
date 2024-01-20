@@ -1,0 +1,19 @@
+
+/* 置顶插件 */
+/* .to-top {
+    display: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    color: #fff;
+    border-radius: 10px;
+    background-color: rgb(66, 185, 131);
+} */
+
+.to-top {
+    width: 90px;
+    height: 110px;
+    transition: all 1s ease 0s; 
+    cursor: pointer;
+    opacity: 0.8;
+
+}
