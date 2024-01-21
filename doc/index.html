@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>一花CCPROXY系统文档</title>
+
+  <!-- 解除其他平台的防盗链 -->
+  <meta name="referrer" content="never">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="./style/vue.css">
+  <link rel="stylesheet" type="text/css" href="./style/myStyle.css" />
+  <!-- alert -->
+  <link rel="stylesheet" href="./style/sweetalert.min.css" type='text/css' media='all' />
+
+  <!-- 切换动画 -->
+  <style>
+    /* 白天和黑夜的背景 */
+    .lx-dark-mode-sky,
+    .lx-dark-mode-sky:before {
+      content: "";
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 999999999;
+      transition: 2s ease all;
+    }
+
+
+    .lx-light-mode-sky,
+    .lx-light-mode-sky:before {
+      content: "";
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 999999999;
+      transition: 2s ease all;
+    }
+
+    .lx-light-mode-sky {
+      background: linear-gradient(#4c3f6d, #6c62bb, #93b1ed);
+    }
+
+    .lx-light-mode-sky:before {
+      opacity: 0;
+      background: linear-gradient(#feb8b0, #fef9db);
+    }
+
+    .lx-light-mode .lx-light-mode-sky:before {
+      opacity: 1;
+    }
+
+
+
+    .lx-dark-mode-sky {
+      background: linear-gradient(#feb8b0, #fef9db);
+    }
+
+    .lx-dark-mode-sky:before {
+      opacity: 0;
+      background: linear-gradient(#4c3f6d, #6c62bb, #93b1ed);
+    }
+
+
+
+    .lx-dark-mode .lx-dark-mode-sky:before {
+      opacity: 1;
+    }
+
+    /* 太阳和月亮 */
+    .lx-dark-mode-planet {
+      z-index: 1999999999;
+      position: fixed;
+      left: -50%;
+      top: -50%;
+      width: 200%;
+      height: 200%;
+      transform-origin: center bottom;
+      transition: 2s cubic-bezier(.7, 0, 0, 1) all;
+    }
+
+    .lx-dark-mode-planet:after {
+      position: absolute;
+      left: 35%;
+      top: 40%;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      content: "";
+      background: linear-gradient(#fefefe, #fffbe8);
+    }
+  </style>
+
+</head>
+
+<body background="" style=" background-repeat:no-repeat ;background-size:100% 100%;background-attachment: fixed;">
+  <div id="app">Loading...</div>
+  <div class="to-top">
+    <img src="./style/img/小火箭.gif" alt="">
+  </div>
+  <div id="do" class="lx-light-mode-sky" style="display: none;">
+    <div class="lx-dark-mode-planet"></div>
+  </div>
+  <script>
+    window.$docsify = {
+      el: '#app',
+      name: '一花CCPROXY文档',
+      repo: 'https://github.com/yeuxuan/ccproxy_kami',
+      loadNavbar: true, //开启导航栏
+      coverpage: true,  //开启封面
+      loadSidebar: true,//开启侧边栏
+      auto2top: true,   //切换页面自动回到顶部
+      subMaxLevel: 2,   //目录最大级数
+      maxLevel: 4,      //可配置最大支持渲染的标题层级
+      homepage: 'zh-cn/README.md', //设置中文的README.md作为首页
+
+      //添加搜索功能，中文和英文文档同时搜索
+      search: {
+        paths: 'auto',
+        placeholder: {
+          '/': '🔍 搜索',
+          '/zh-cn/': '🔍 搜索',
+          '/en-us/': '🔍 Type to search'
+        },
+        //如果中文和英文文档都没有内容，则返回
+        noData: {
+          '/': '😒 找不到结果',
+          '/zh-cn/': '😒 找不到结果',
+          '/en-us/': '😒 No Results'
+        },
+
+        depth: 4,         //搜索标题的最大层级
+        maxAge: 86400000, // 过期时间，单位毫秒，默认一天
+      },//增加搜索框
+
+      footer: {
+        copy: 'Copyright &copy; 2023 💖 </span>',
+        auth: ' <strong>-一花-</strong>',
+        pre: '<hr/>',
+        style: 'text-align: center;',
+      },
+
+      copyCode: {
+        buttonText: 'Copy',
+        errorText: 'Copy Error!',
+        successText: 'Copy OK!'
+      },
+
+      'flexible-alerts': {
+        style: 'flat'
+      },
+      count: {
+        countable: true,
+        fontsize: '0.9em',
+        color: 'rgb(90,90,90)',
+        language: 'chinese'
+      },
+    }
+  </script>
+
+  <script src="./style/docsify.min.js"></script>
+
+  <!-- docsify表情包 -->
+  <script src="./style/emoji.min.js"></script>
+
+  <!-- 复制代码到剪切板 -->
+  <script src="./style/docsify-copy-code.js"></script>
+
+  <!-- 搜索功能 -->
+  <script src="./style/search.min.js"></script>
+
+  <!-- C++、Java、python、bash等等语法高亮 -->
+  <script src="./style/prism-bash.min.js"></script>
+  <script src="./style/prism-java.min.js"></script>
+  <script src="./style/prism-python.min.js"></script>
+  <script src="./style/prism-cpp.min.js"></script>
+  <script src="./style/prism-c.min.js"></script>
+  <script src="./style/prism-javascript.min.js"></script>
+  <script src="./style/prism-css.min.js"></script>
+  <script src="./style/prism-powershell.min.js"></script>
+  <script src="./style/prism-sql.min.js"></script>
+  <script src="./style/prism-yaml.min.js"></script>
+  <script src="./style/prism-properties.min.js"></script>
+  <script src="./style/prism-matlab.js"></script>
+
+  <!-- CDN files for docsify-katex -->
+  <script src="./style/docsify-katex.js"></script>
+
+  <!-- 文档页脚增强 -->
+  <script src="./style/docsify-footer.min.js"></script>
+
+
+  <!-- 字数统计 -->
+  <script src="./style/countable.js"></script>
+
+  <!-- 复制提醒 -->
+  <script src="./style/sweetalert.min.js"></script>
+  <script>
+
+    document.body.oncopy = function () {
+      swal("复制成功 🎉",
+        "若要转载或引用请务必保留原文链接，并申明来源。如果你觉得本仓库不错，那就来 Github 给个 star 吧 😊",
+        "success");
+    };
+
+    function SetThemes(mode) {
+      var getThemes = getCookie("themes");
+
+      if (getThemes == mode) {
+        swal("当前正处于" + (getThemes == "dark" ? "黑夜" : "白昼") + "模式🌝",
+          "",
+          "success");
+        return;
+      }
+
+      if (mode == "dark") {
+        $("#do").removeClass("lx-light-mode-sky");
+        $("#do").addClass("lx-dark-mode-sky");
+      } else {
+        $("#do").removeClass("lx-dark-mode-sky");
+        $("#do").addClass("lx-light-mode-sky");
+      }
+
+      if (mode == "dark") {
+        $(".lx-dark-mode-sky").show();
+        $("body").addClass("lx-dark-mode");
+        $("body").removeClass("lx-light-mode");
+        var angle = $('.lx-dark-mode-planet').data('angle') + 360 || 360;
+        $('.lx-dark-mode-planet').css({ 'transform': 'rotate(' + angle + 'deg)' });
+        $('.lx-dark-mode-planet').data('angle', angle);
+      } else {
+        $(".lx-light-mode-sky").show();
+        $("body").addClass("lx-light-mode");
+        $("body").removeClass("lx-dark-mode");
+        var angle = $('.lx-dark-mode-planet').data('angle') + -360 || -360;
+        $('.lx-dark-mode-planet').css({ 'transform': 'rotate(' + angle + 'deg)' });
+        $('.lx-dark-mode-planet').data('angle', angle);
+      }
+      setCookie("themes", mode, 1);
+      setTimeout(() => {
+        $(".lx-" + mode + "-mode-sky").hide();
+        location.reload();
+      }, 2000);
+    }
+  </script>
+
+  <!-- PWA 离线化 -->
+  <script>
+    if (typeof navigator.serviceWorker !== 'undefined') {
+      navigator.serviceWorker.register('sw.js')
+    }
+  </script>
+
+  <!-- 置顶插件 -->
+  <script src="./style/jquery-1.11.3.min.js"></script>
+  <script src="./style/jquery.toTop.min.js"></script>
+  <script>
+
+    $('.to-top').toTop();
+
+    /**
+      cname:键
+      cvalue：值
+      exdays：过期时间（单位为小时，可以设置负数，代表过期时间，
+      如
+      1，代表明天
+      -1，代表昨天
+      ）
+    **/
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays * 60 * 60 * 1000));
+      var expires = "expires=" + d.toGMTString();
+      document.cookie = cname + "=" + cvalue + "; " + expires;
+    }
+
+    function getCookie(name) {
+      // 拆分 cookie 字符串
+      var cookieArr = document.cookie.split(";");
+
+      // 循环遍历数组元素
+      for (var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+
+        /* 删除 cookie 名称开头的空白并将其与给定字符串进行比较 */
+        if (name == cookiePair[0].trim()) {
+          // 解码cookie值并返回
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      // 如果未找到，则返回null
+      return null;
+    }
+
+    //夜间返回false，白天返回true，（这里夜间时间设置为23:00 -- 07:00）
+    function isDaylight() {
+      var currdate = new Date().getHours();
+      if (currdate >= 21 || currdate < 7) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    var stringThemes;
+    var getThemes = getCookie("themes");
+
+    var info = getCookie("tip");
+
+    if (info == null || info == '') {
+      if (getThemes != "dark") {
+        if (!isDaylight()) {
+          swal({
+            title: '夜间提示',
+            text: '夜已经深了是否开启黑夜模式',
+            showCancelButton: 'true',
+            confirmButtonText: '开启',
+            cancelButtonText: '稍等',
+            type: 'info',
+          }, function (isConfirm) {
+            if (isConfirm) {
+              SetThemes("dark");
+            }
+          });
+          setCookie("tip", true, 8);
+        }
+      }
+    }
+
+    if (getThemes == "dark") {
+      $("#do").removeClass("lx-light-mode-sky");
+      $("#do").addClass("lx-dark-mode-sky");
+    } else {
+      $("#do").removeClass("lx-dark-mode-sky");
+      $("#do").addClass("lx-light-mode-sky");
+    }
+
+    if (getThemes == "light") {
+      stringThemes = "vue";
+    } else if (getThemes == "dark") {
+      stringThemes = "dark";
+    } else {
+      stringThemes = "vue";
+    }
+
+    $('head').append("<link rel=\"stylesheet\" href=\"./style/themes/" + stringThemes + ".css\">");
+
+  </script>
+
+  <!-- Markdown 引用样式美化 -->
+  <script src="./style/docsify-plugin-flexible-alerts.min.js"></script>
+
+  <!-- 图片缩放 -->
+  <script src="./style/zoom-image.js"></script>
+
+</body>
+
+</html>

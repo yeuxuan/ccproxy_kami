@@ -1,0 +1,7 @@
+- [主页](/)
+-     语言   
+    - [:cn: 中文](/zh-cn/)
+    - [:us: English](/en-us/)
+- 主题
+	- <a onclick="SetThemes('light')">:sunny:白天</a>
+	- <a onclick="SetThemes('dark')">:night_with_stars:黑夜</a>
