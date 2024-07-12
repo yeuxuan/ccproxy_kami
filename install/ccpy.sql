@@ -188,6 +188,6 @@ CREATE TABLE `sub_admin`  (
 -- ----------------------------
 -- Records of sub_admin
 -- ----------------------------
-INSERT INTO `sub_admin` VALUES (1, 'admin', '123456', '一花端口', '83275ievSUMhd+lxqyaiHaByaNh/AsEdw9iOFmBCD9n2L5GjdwJc43tia/no84+p81W8Q0ChfigYCObiN9jLuZcwxg', '2022-01-12 19:24:34', '2024-03-13 00:00:00', 'localhost:7788', 1, './assets/img/bj.jpg', '注意<br>PHP版本最好设置为7.3<br>不然容易出现问题<br><div style=\"color:red\"><span>我是公告</span></div>我是公告', 'http://wpa.qq.com/msgrd?v=3&uin=487735913&site=qq&menu=yes', 'https://tse1-mm.cn.bing.net/th/id/OIP-C.tV58EvgJSzLG3iOTLzB85QHaEo?pid=ImgDet&rs=1', 1, 0);
+INSERT INTO `sub_admin` VALUES (1, 'admin', '123456', '一花端口', '83275ievSUMhd+lxqyaiHaByaNh/AsEdw9iOFmBCD9n2L5GjdwJc43tia/no84+p81W8Q0ChfigYCObiN9jLuZcwxg', '2022-01-12 19:24:34', '2026-03-13 00:00:00', 'localhost:7788', 1, './assets/img/bj.jpg', '注意<br>PHP版本最好设置为7.3<br>不然容易出现问题<br><div style=\"color:red\"><span>我是公告</span></div>我是公告', 'http://wpa.qq.com/msgrd?v=3&uin=487735913&site=qq&menu=yes', 'https://tse1-mm.cn.bing.net/th/id/OIP-C.tV58EvgJSzLG3iOTLzB85QHaEo?pid=ImgDet&rs=1', 1, 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
