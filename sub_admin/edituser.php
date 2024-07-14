@@ -33,7 +33,7 @@ $bandwidthdown=$_REQUEST["bandwidthdown"]=="无限制"?-1:$_REQUEST["bandwidthdo
 	<?php
 	include("foot.php");
 	?>
-	<!-- <link rel="stylesheet" href="https://www.layuicdn.com/layui/css/layui.css?v=20201111001" />
+	<!-- <link rel="stylesheet" href="../assets/layui/css/layui.css?v=20201111001?v=20201111001" />
 		<link rel="stylesheet" type="text/css" href="./css/theme.css?v=20201111001" /> -->
 	<style>
 		body {

@@ -56,7 +56,7 @@ if(isset($_POST['username']) && isset($_POST['password'])){
 		<?php
 		include("foot.php");
 		?>
-		<!-- <link rel="stylesheet" href="https://www.layuicdn.com/layui/css/layui.css"> -->
+		<!-- <link rel="stylesheet" href="../assets/layui/css/layui.css?v=20201111001"> -->
 		<link rel="stylesheet" href="../assets/layui/css/logon.css">
 	</head>
 	<body>

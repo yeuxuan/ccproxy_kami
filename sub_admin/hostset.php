@@ -11,7 +11,7 @@ if (!($islogin == 1)) {
 		<title>
 		<?php echo $subconf['hostname']; ?>-网站设置
 		</title>
-		<!-- <link rel="stylesheet" href="https://www.layuicdn.com/layui/css/layui.css">
+		<!-- <link rel="stylesheet" href="../assets/layui/css/layui.css?v=20201111001">
 		<link rel="stylesheet" type="text/css" href="../css/theme.css" /> -->
         <?php
 	    include("foot.php");
