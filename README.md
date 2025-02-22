@@ -3,6 +3,7 @@
 
 ># 当前程序最新版本为 **V2.0.0**
 
+# [**商业版本（点击查看详情）**](http://vip.dx3n.cn/ext/)
 # [**官方文档（最新）**](https://yeuxuan.github.io/ccproxy_kami/#/)
 
 **必须使用PHP7.3-7.4 不然会有问题！！！**
