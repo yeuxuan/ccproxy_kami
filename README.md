@@ -83,3 +83,5 @@
 >* 4.教程还在准备！稍等哦！
 
 #**[<font style="color:red;">1.5.2版本之前需要清理数据库数据更新数据，需要重新安装，以前生成的卡密不能使用！！！</font>][1]**
+
+[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
