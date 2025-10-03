@@ -126,7 +126,7 @@ include("foot.php");
 
 			function select() {
 				$.ajax({
-					url: "ajax.php?act=getserver",
+					url: "ajax.php?act=getuseserver",
 					type: "POST",
 					dataType: "json",
 					success: function(data) {

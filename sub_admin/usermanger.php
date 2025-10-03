@@ -56,7 +56,15 @@ include("foot.php");
 			<button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="New"><i class="layui-icon layui-icon-add-1"></i><span>新增</span></button>
 			<button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="edit"><i class="layui-icon layui-icon-edit"></i><span>编辑</span></button>
 			<button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="Del"><i class="layui-icon layui-icon-delete"></i><span>删除</span></button>
+			<button class="layui-btn layui-btn-warm layui-btn-sm" lay-event="clearCache"><i class="layui-icon layui-icon-refresh"></i><span>清除缓存</span></button>
+				<!-- 一键加时：为当前筛选或全部用户批量增加时长（天） -->
+			<button id="addTimeAllBtn" class="layui-btn layui-btn-warm layui-btn-sm" lay-event="addTimeAll" title="为当前应用或全部用户批量加时"><i class="layui-icon layui-icon-date"></i><span>一键加时</span></button>
+			<!-- 用户操作：打开包含批量用户操作的弹窗（如一键删除到期账号） -->
+			<button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="userops" id="userOpsBtn" title="包括删除全部到期账号"><i class="layui-icon layui-icon-set-fill"></i><span>用户操作</span></button>
+		
+			
 		</div>
+
 	</script>
 	<!-- 表格按钮 -->
 	<script type="text/html" id="btnTool">
@@ -267,6 +275,183 @@ include("foot.php");
 						// console.log(checkStatus,obj);
 						edit(checkStatus);
 						break;
+					case "clearCache":
+						layer.confirm("确定要清除缓存吗？", {
+							icon: 3
+						}, function() {
+							$.ajax({
+								url: "ajax.php?act=clearcache",
+								type: "POST",
+								dataType: "json",
+								beforeSend: function() {
+									layer.msg("正在清除缓存", {
+										icon: 16,
+										shade: 0.05,
+										time: false
+									});
+								},
+								success: function(data) {
+									layer.msg(data.msg, {
+										icon: data.code == "1" ? 1 : 5
+									});
+									if (data.code == "1") {
+										reload("server_list");
+									}
+								},
+								error: function(data) {
+									layer.msg("清除缓存失败", {
+										icon: 5
+									});
+								}
+							});
+						});
+						break;
+				case "addTimeAll":
+					// 打开自定义弹窗：支持正负、天/小时、作用域（全部/当前应用/选中），并提供实时预览和提示
+					var html = '\n<div style="padding:12px;">\n  <div class="layui-form-item">\n    <label class="layui-form-label">数量</label>\n    <div class="layui-input-block">\n      <input type="number" id="__amt" class="layui-input" value="30" placeholder="可为负，例：-1 表示减少 1 单位">\n    </div>\n    <div style="margin-top:6px;color:#888;font-size:12px">示例：输入 <strong>1</strong> + 单位 <strong>天</strong> 表示增加 1 天；输入 <strong>-2</strong> + <strong>小时</strong> 表示减少 2 小时</div>\n  </div>\n  <div class="layui-form-item">\n    <label class="layui-form-label">单位</label>\n    <div class="layui-input-block">\n      <select id="__unit" class="layui-input">\n        <option value="days">天</option>\n        <option value="hours">小时</option>\n      </select>\n    </div>\n  </div>\n  <div class="layui-form-item">\n    <label class="layui-form-label">作用域</label>\n    <div class="layui-input-block">\n      <input type="radio" name="__scope" value="app" title="当前应用(默认)" checked>\n      <input type="radio" name="__scope" value="all" title="全站">\n      <input type="radio" name="__scope" value="selected" title="仅选中用户">\n    </div>\n  </div>\n  <div id="__preview" style="background:#fafafa;border:1px dashed #eee;padding:8px;margin:8px 0;color:#333;font-size:13px">预览：请填写数量并选择作用域，实时显示将要影响的范围</div>\n  <div style="color:#999;font-size:12px">注意：支持负数减少时间；永久账户(autodisable=0)将被跳过；大量用户操作可能较慢，建议先小范围测试 \nby VSC </div>\n</div>';
+					layer.open({
+						type:1,
+						title:'一键加/减时',
+						area:['520px','360px'],
+						content:html,
+						btn:['确认','取消'],
+						success:function(layero, index){
+							// 初始化预览
+
+
+
+							function updatePreview(){
+								var amount = parseFloat(layero.find('#__amt').val());
+								var unit = layero.find('#__unit').val();
+								var scope = layero.find('input[name="__scope"]:checked').val();
+								var appVal = $('[name=app]').val();
+								var appName = $('[name=app] option:selected').text() || appVal || '（未选择）';
+								var selCount = 0;
+								try{ var cs = table.checkStatus('server_list'); if(cs && cs.data) selCount = cs.data.length; }catch(e){}
+								var action = isNaN(amount)?'未填写':(amount>0?('增加 '+amount+' '+unit):('减少 '+Math.abs(amount)+' '+unit));
+								var scopeText = scope==='selected'?('选中用户（共 '+selCount+' 项）'):(scope==='app'?('当前应用：'+appName):'全站所有用户');
+								var warn = '';
+								if(scope==='app' && (!appVal || appVal=='')) warn = '<div style="color:#a94442;margin-top:6px">警告：未选择应用，当前操作将作用于全站所有服务器 请确认或切换为“全站”选项</div>';
+								var previewHtml = '<strong>将执行：</strong> '+action+'，<strong>目标范围：</strong>'+scopeText+'。'+warn;
+								layero.find('#__preview').html(previewHtml);
+							}
+							// 绑定事件
+							layero.find('#__amt, #__unit').on('input change', updatePreview);
+							layero.find('input[name="__scope"]').on('change', updatePreview);
+							// 首次渲染
+							updatePreview();
+						},
+						yes:function(index, layero){
+							var amount = parseFloat(layero.find('#__amt').val());
+							var unit = layero.find('#__unit').val();
+							var scope = layero.find('input[name="__scope"]:checked').val();
+							if(isNaN(amount) || amount==0){
+								layer.msg('请输入非零的数值（正数为增加，负数为减少）',{icon:5});
+								return;
+							}
+							var payload = { amount: amount, unit: unit };
+							var targetText = '';
+							if(scope==='selected'){
+								var checkStatus = table.checkStatus('server_list');
+								if(!checkStatus || !checkStatus.data || checkStatus.data.length==0){
+									layer.msg('未选择任何用户，请先勾选表格中的目标用户',{icon:5});
+									return;
+								}
+								var users = [];
+								for(var i=0;i<checkStatus.data.length;i++){
+									users.push({user:checkStatus.data[i].user, serverip:checkStatus.data[i].serverip});
+								}
+								payload.users = users;
+								targetText = '选中用户（共 '+users.length+' 项）';
+							} else if(scope==='app'){
+								var appVal = $('[name=app]').val();
+								var appName = $('[name=app] option:selected').text() || appVal || '（未选择）';
+								payload.app = appVal;
+								targetText = '当前应用：'+appName+(appVal==''? '（未选择，将作用于全站）':'');
+							} else {
+								payload.app = '';
+								targetText = '全站所有用户';
+							}
+							// 提示确认信息，包含操作摘要与目标范围
+							var opText = amount>0?('增加 '+amount+' '+unit):('减少 '+Math.abs(amount)+' '+unit);
+							layer.confirm('<div style="text-align:left">请确认：<br/><br/><strong>操作：</strong>'+opText+'<br/><strong>作用域：</strong>'+targetText+'<br/><br/><span style="color:#999">注意：永久账户会被跳过；此操作会同步到CCProxy，可能需要一些时间</span></div>', {icon:3, area:['520px','auto']}, function(idx2){
+								layer.close(idx2);
+								layer.close(index);
+								$.ajax({
+									url:'ajax.php?act=addtimeall',
+									type:'POST',
+									dataType:'json',
+									data: payload,
+									beforeSend: function(){ layer.msg('执行中，请稍候',{icon:16,shade:0.05,time:false}); },
+									success:function(res){ layer.msg(res.msg,{icon: res.code==1?1:5}); if(res.code==1) reload('server_list'); },
+									error:function(){ layer.msg('操作失败',{icon:5}); }
+								});
+							});
+						},
+						cancel:function(){ }
+					});
+					break;
+				case "userops":
+					// 使用与一键加时类似的弹窗，支持选择作用域（当前应用/全站/选中）并实时预览
+					var html = '\n<div style="padding:12px;">\n  <div class="layui-form-item">\n    <label class="layui-form-label">操作</label>\n    <div class="layui-input-block">\n      <button id="__del_expired" class="layui-btn layui-btn-danger">一键删除到期账号</button>\n    </div>\n  </div>\n  <div class="layui-form-item">\n    <label class="layui-form-label">作用域</label>\n    <div class="layui-input-block">\n      <input type="radio" name="__scope_userops" value="app" title="当前应用(默认)" checked>\n      <input type="radio" name="__scope_userops" value="all" title="全站">\n      <input type="radio" name="__scope_userops" value="selected" title="仅选中用户">\n    </div>\n  </div>\n  <div id="__preview_userops" style="background:#fafafa;border:1px dashed #eee;padding:8px;margin:8px 0;color:#333;font-size:13px">预览：请选择作用域或选中用户</div>\n  <div style="color:#999;font-size:12px">注意：永久账户(autodisable=0)将被跳过；删除操作会同步到 CCProxy 服务器，可能需要一些时间\n By VSC</div>\n</div>';
+					layer.open({
+						type:1,
+						title:'用户操作',
+						area:['560px','320px'],
+						content:html,
+						btn:['确认','取消'],
+						success:function(layero, index){
+							function updatePreview(){
+								var scope = layero.find('input[name="__scope_userops"]:checked').val();
+								var appVal = $('[name=app]').val();
+								var appName = $('[name=app] option:selected').text() || appVal || '（未选择）';
+								var selCount = 0;
+								try{ var cs = table.checkStatus('server_list'); if(cs && cs.data) selCount = cs.data.length; }catch(e){}
+								var scopeText = scope==='selected'?('选中用户（共 '+selCount+' 项）'):(scope==='app'?('当前应用：'+appName):'全站所有用户');
+								layero.find('#__preview_userops').html('<strong>将执行：</strong> 删除全部已到期账号，<strong>目标范围：</strong>'+scopeText);
+							}
+							layero.find('input[name="__scope_userops"]').on('change', updatePreview);
+							updatePreview();
+							// 绑定一键删除按钮，放在弹窗内部只是触发演示，真正操作在确认按钮中执行
+							layero.find('#__del_expired').on('click', function(){
+								layer.msg('请点击弹窗底部的【确认】以执行删除操作',{icon:0});
+							});
+						},
+						yes:function(index, layero){
+							var scope = layero.find('input[name="__scope_userops"]:checked').val();
+							var payload = {};
+							if(scope==='selected'){
+								var checkStatus = table.checkStatus('server_list');
+								if(!checkStatus || !checkStatus.data || checkStatus.data.length==0){
+									layer.msg('未选择任何用户，请先勾选表格中的目标用户',{icon:5});
+									return;
+								}
+								var users = [];
+								for(var i=0;i<checkStatus.data.length;i++){
+									users.push({user:checkStatus.data[i].user, serverip:checkStatus.data[i].serverip});
+								}
+								payload.users = users;
+							} else if(scope==='app'){
+								payload.app = $('[name=app]').val();
+							} else {
+								payload.app = '';
+							}
+							layer.confirm('<div style="text-align:left">请确认：<br/><br/><strong>操作：</strong>删除全部到期账号<br/><strong>作用域：</strong>'+(scope==='selected'?('选中用户（共 '+(payload.users?payload.users.length:0)+' 项）'):(scope==='app'?('当前应用：'+($('[name=app] option:selected').text()||'（未选择）')):'全站所有用户'))+'<br/><br/><span style="color:#999">注意：永久账户会被跳过；大量用户操作可能需要较长时间</span></div>', {icon:3, area:['520px','auto']}, function(idx2){
+								layer.close(idx2);
+								layer.close(index);
+								$.ajax({
+									url:'ajax.php?act=delallexpired',
+									type:'POST',
+									dataType:'json',
+									data: payload,
+									beforeSend: function(){ layer.msg('执行中，请稍候',{icon:16,shade:0.05,time:false}); },
+									success:function(res){ layer.msg(res.msg,{icon: res.code==1?1:5}); if(res.code==1) reload('server_list'); },
+									error:function(){ layer.msg('操作失败',{icon:5}); }
+								});
+							});
+						}
+					});
+					break;
 				};
 			});
 

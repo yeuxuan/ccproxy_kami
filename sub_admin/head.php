@@ -3,26 +3,120 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<link rel="stylesheet" href="../assets/layui/css/layui.css?v=20201111001" />
+		<link rel="stylesheet" href="../assets/layui/css/layui.css?v=20241111001" />
 		<link rel="stylesheet" type="text/css" href="css/admin.css" />
 		<link rel="stylesheet" type="text/css" href="css/theme.css" />
 		<title><?php echo $subconf['hostname'].'后台管理'; ?></title>
         <style>
-            /* .wz{
-                font: size 23px;
+            /* 移除全局过渡动画，改为针对性设置 */
+            * {
+                transition: none;
             }
-            @media all and (min-width:1024px) {
-                #logowz{
-                    display: none;
-                }
-               #logos {
-                display: block;
+            
+            /* 导航菜单动画优化 */
+            .layui-nav-item {
+                transition: background-color 0.3s ease;
+            }
+            
+            .layui-nav-item:hover {
+                background-color: rgba(255,255,255,0.1);
+            }
+            
+            /* 简化菜单项动画 */
+            .layui-nav-item a i,
+            .layui-nav-item a span,
+            .layui-nav-item a em {
+                display: inline-block;
+                transition: transform 0.2s ease-out;
+                will-change: transform;
+            }
+            
+            .layui-nav-item a:hover i,
+            .layui-nav-item a:hover span,
+            .layui-nav-item a:hover em {
+                transform: translateX(5px);
+            }
+            
+            /* 确保子菜单不受影响 */
+            .layui-nav-child dd a:hover i,
+            .layui-nav-child dd a:hover span {
+                transform: none;
+            }
+            
+            /* 头部导航优化 */
+            .custom-header .layui-nav-item a:hover i,
+            .custom-header .layui-nav-item a:hover span {
+                transform: none;
+            }
+            
+            /* LOGO样式优化 */
+            .custom-logo {
+                padding: 20px 0;
                 text-align: center;
-                font-size: 15px;
-                vertical-align: middle;
-                 margin-right: 25px;
+                transition: all 0.4s;
+            }
+            
+            #logos {
+                font-size: 24px;
+                color: #fff;
+                margin: 0;
+                text-shadow: 0 0 10px rgba(51, 202, 187, 0.5);
+                animation: glow 2s ease-in-out infinite alternate;
+            }
+            
+            .custom-logo #logowz {
+                display: block;
+                font-size: 14px;
+                color: #33cabb !important;
+                margin-top: 5px;
+                font-weight: 500;
+                letter-spacing: 1px;
+                text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+            }
+            
+            /* 消息徽章动画 */
+            .layui-badge {
+                transition: transform 0.3s;
+            }
+            
+            .layui-badge:hover {
+                transform: scale(1.1);
+            }
+            
+            /* LOGO发光动画 */
+            @keyframes glow {
+                from {
+                    text-shadow: 0 0 5px #33cabb, 0 0 10px #33cabb;
                 }
-            } */
+                to {
+                    text-shadow: 0 0 10px #33cabb, 0 0 20px #33cabb;
+                }
+            }
+            
+            /* 移动端遮罩层动画 */
+            .mobile-mask {
+                transition: opacity 0.3s;
+            }
+            
+            /* 选项卡动画 */
+            .layui-tab-title li {
+                transition: all 0.3s;
+            }
+            
+            .layui-tab-title li:hover {
+                background-color: rgba(51, 202, 187, 0.1);
+            }
+            
+            /* 响应式布局优化 */
+            @media screen and (max-width: 768px) {
+                .custom-logo {
+                    padding: 10px 0;
+                }
+                
+                #logos {
+                    font-size: 20px;
+                }
+            }
         </style>
 	</head>
 	<body class="layui-layout-body">

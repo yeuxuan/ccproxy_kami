@@ -215,12 +215,12 @@ if (!($islogin == 1)) {
 				}
 			});
 			if (flag > 1) {
-				$(this).parent().find(".layui-form-checked").each(function(e){
+				$(this).parent().find(".layui-form-checked").each(function(e) {
 					$(this).removeClass("layui-form-checked");
 					$(this).prev().removeAttr("checked")
 				});
-				$(this).prop("checked",true);
-				flag=0;
+				$(this).prop("checked", true);
+				flag = 0;
 			}
 			form.render("checkbox");
 		});
@@ -268,15 +268,16 @@ if (!($islogin == 1)) {
 						window.parent.frames.reload("daili_kami");
 						parent.layer.closeAll();
 						parent.layer.msg("生成成功", {
-							icon: 1
+							icon: 1,
 						});
 					} else if (data.code == "2") {
 						window.parent.frames.reload("daili_kami");
 						parent.layer.closeAll();
 						parent.layer.msg("生成成功", {
-							icon: 1
+							icon: 1,
 						});
-						console.log(data);
+
+						// console.log(data);
 						var kami = "您生成的卡密为：\n\n";
 						var num = 0;
 						for (var key in data.kami) {
@@ -284,12 +285,36 @@ if (!($islogin == 1)) {
 							kami += data.kami[key]["kami"] + "\n"
 							num++;
 						}
+
+						// 当卡密数量大于500时
+						if (num > 500) {
+							parent.layer.msg("生成成功，但是卡密数量过多，请使用导出功能导出卡密", {
+								icon: 1,
+								time: 2000
+							});
+							return;
+						}
+
+						// 显示卡密内容弹窗
+						parent.layer.open({
+							type: 1,
+							title: '卡密窗口',
+							area: ['400px', '500px'],
+							content: '<div style="padding: 20px;">' +
+								'<div style="margin-bottom:10px;">共生成 ' + num + ' 张卡密：</div>' +
+								'<textarea readonly style="width:100%;height:350px;resize:none;">' + kami + '</textarea>' +
+								'<button class="layui-btn layui-btn-normal" onclick="layui.jquery(this).prev().select();document.execCommand(\'copy\');parent.layer.msg(\'复制成功\',{icon:1,time:1000});" style="margin-top:10px;">复制卡密</button>' +
+								'</div>'
+						});
+
 						console.log(kami + "\n一花CCPROXY卡密系统卡密生成结束共为您生成" + num + "张。")
 						console.log('\n' + ' %c 一花❀ %c 一花落下满地伤 ' + '\n', 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;; padding:5px 0');
 						copy(kami + "\n一花CCPROXY卡密系统卡密生成结束共为您生成" + num + "张。");
 						parent.layer.msg("卡密已经复制成功！", {
 							time: 1500
 						})
+
+
 					} else {
 						layer.msg(data.msg, {
 							icon: 5

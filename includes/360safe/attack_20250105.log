@@ -1,0 +1,256 @@
+[2025-01-05 14:16:00][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)\.(?:php\d*|phtml|php[st]|sh|asp|aspx|jsp|jspx|exe|dll|so|bat|cmd)
+
+[2025-01-05 14:16:52][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)\.(?:php\d*|phtml|php[st]|sh|asp|aspx|jsp|jspx|exe|dll|so|bat|cmd)
+
+[2025-01-05 14:17:07][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)\.(?:php\d*|phtml|php[st]|sh|asp|aspx|jsp|jspx|exe|dll|so|bat|cmd)
+
+[2025-01-05 14:17:09][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)\.(?:php\d*|phtml|php[st]|sh|asp|aspx|jsp|jspx|exe|dll|so|bat|cmd)
+
+[2025-01-05 14:17:11][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)\.(?:php\d*|phtml|php[st]|sh|asp|aspx|jsp|jspx|exe|dll|so|bat|cmd)
+
+[2025-01-05 14:17:24][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)\.(?:php\d*|phtml|php[st]|sh|asp|aspx|jsp|jspx|exe|dll|so|bat|cmd)
+
+[2025-01-05 14:23:39][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^(?!.*/uploads/).*\.(php\d*|phtml|php[st]|sh|asp|aspx|jsp|jspx|exe|dll|so|bat|cmd)$
+
+[2025-01-05 14:23:40][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^(?!.*/uploads/).*\.(php\d*|phtml|php[st]|sh|asp|aspx|jsp|jspx|exe|dll|so|bat|cmd)$
+
+[2025-01-05 14:24:36][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php\d*$
+
+[2025-01-05 14:24:37][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php\d*$
+
+[2025-01-05 14:24:38][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php\d*$
+
+[2025-01-05 14:24:40][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php\d*$
+
+[2025-01-05 14:24:41][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php\d*$
+
+[2025-01-05 14:24:44][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php\d*$
+
+[2025-01-05 14:24:44][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php\d*$
+
+[2025-01-05 14:25:18][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^(?!.*uploads/).*\.php$
+
+[2025-01-05 14:25:19][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^(?!.*uploads/).*\.php$
+
+[2025-01-05 14:26:32][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php$
+
+[2025-01-05 14:26:33][IP: 127.0.0.1][Method: GET][URI: /]
+Matched String: primary.php
+Matched Pattern: (?i)^((?!uploads/).)*\.php$
+
+[2025-01-05 17:13:41][IP: 127.0.0.1][Method: POST][URI: /api/cpproxy.php?type=insert]
+Matched String: type=insert
+Matched Pattern: (?i)(select|update|insert|delete|union|drop|create|alter|truncate|exec|declare|rename)
+
+[2025-01-05 17:13:50][IP: 127.0.0.1][Method: POST][URI: /api/cpproxy.php?type=insert]
+Matched String: type=insert
+Matched Pattern: (?i)(select|update|insert|delete|union|drop|create|alter|truncate|exec|declare|rename)
+
+[2025-01-05 18:01:24][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:26][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:27][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:28][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:28][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:28][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:29][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:29][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:29][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:30][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:30][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:30][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:30][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:31][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:34][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:38][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:38][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:38][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:01:38][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:03:11][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|http|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:03:15][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|http|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:03:20][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|http|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:03:22][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|http|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:03:38][IP: 192.168.1.6][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:file|https?|http|ftp|php|zlib|data|glob|phar|ssh2|rar|ogg|expect)://(?!localhost)(?!127\.0\.0\.1)
+
+[2025-01-05 18:15:16][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:15:18][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:15:19][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:15:23][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:15:24][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:18:24][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:18:29][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:18:33][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:18:38][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:18:40][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:18:42][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:18:52][IP: 192.168.1.3][Method: POST][URI: /api/api.php?act=gethostapp]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:18:58][IP: 192.168.1.3][Method: POST][URI: /api/api.php?act=gethostapp]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:19:03][IP: 192.168.1.3][Method: POST][URI: /api/api.php?act=gethostapp]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:19:15][IP: 192.168.1.3][Method: POST][URI: /api/api.php?act=gethostapp]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:19:20][IP: 192.168.1.3][Method: GET][URI: /]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:19:20][IP: 192.168.1.3][Method: POST][URI: /api/api.php?act=gethostapp]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:20:51][IP: 192.168.1.3][Method: POST][URI: /api/api.php?act=gethostapp]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+
+[2025-01-05 18:21:01][IP: 192.168.1.3][Method: POST][URI: /api/api.php?act=gethostapp]
+Matched String: http://192.168.1.6:5001/
+Matched Pattern: (?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)
+

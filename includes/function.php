@@ -66,7 +66,7 @@ function daddslashes($string, $force = 0, $strip = FALSE)
  */
 function sysmsg($msg = '未知的异常', $die = true)
 {
-?>
+    ?>
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN">
 
@@ -215,7 +215,7 @@ function sysmsg($msg = '未知的异常', $die = true)
     </body>
 
     </html>
-<?php
+    <?php
     if ($die == true) {
         exit;
     }
@@ -347,7 +347,7 @@ function WriteLog($operation, $msg, $operationer, $DB)
 function UserUpdate($adminpassword, $adminport, $proxyaddress, $user, $password, $day,$connection2,$bandwidthup,$bandwidthdown, $userenable="0",$newuser="")
 {
     if (!CheckStrChinese($user)) {
-        return ["code" => "-1", "msg"=>"用户名不合法", "icon" => "5"];
+        return ["code" => "-1", "msg"=>"用户名不合法，大概率是与服务器冲突了", "icon" => "5"];
     } 
     if (strlen($user)<5) {
         return ["code" => "-1", "msg"=>"用户名长度不合法", "icon" => "5"];
@@ -565,7 +565,7 @@ function AddUser($proxyaddress,$admin_password,$admin_port,$userdata)
 {
   try {
     if (!CheckStrChinese($userdata["user"])) {
-        return ["code" => "-1", "msg"=>"用户名不合法", "icon" => "5"];
+        return ["code" => "-1", "msg"=>"用户名不合法，大概率是与服务器冲突了", "icon" => "5"];
     } 
     if (strlen($userdata["user"])<5) {
         return ["code" => "-1", "msg"=>"用户名长度不合法", "icon" => "5"];

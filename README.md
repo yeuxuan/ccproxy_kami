@@ -1,15 +1,42 @@
+#感谢使用
+此分支说明
+新增 一键删除到期账号 卡密导入 一键加时 一键减时 logo尺寸自适应
+优化 主页布局 新增提示，公告毛玻璃效果 
+替换 替换主页颜色 UI布局 
+优化 后台卡密逻辑 提高运行速度 优化代码 
+
+
 # ccproxy-一花服务器卡密管理系统
 **ccproxy卡密管理系统 生成卡密 激活 用户在线管理 websocket 通讯 fsopen 通讯** 
 
-># 当前程序最新版本为 **V1.5**.2
+># 当前程序最新版本为 **V2.0.0**
 
+# [**商业版本（点击查看详情）**](http://vip.dx3n.cn/ext/)
 # [**官方文档（最新）**](https://yeuxuan.github.io/ccproxy_kami/#/)
 
 **必须使用PHP7.3-7.4 不然会有问题！！！**
 
 **数据库必须使用Mysql5.7不然会有问题！！！**
 
-#**[<font style="color:red;">从1.5.2版本起更新需要清理数据库数据更新数据，需要重新安装，以前生成的卡密不能使用！！！</font>][1]**
+##### V2.0.0 更新日志
+
+> - 1.修复已知bug
+> - 2.修复sql注入漏洞
+> - 3.修复许许多多的安全问题
+> - 4.增加卡密输出弹窗
+> - 5.更新首页UI
+> - 6.更快的速度，更安全
+> - 7.重构大部分代码
+
+##### V1.5.2 更新日志
+
+> - 1.更新卡密时长类型
+> - 2.更新域名与IP的验证
+> - 3.卡密显示时长UI ajax getkami 新增方法 KamiPaeseString
+> - 4.更新ccproxy.php enddate 更新卡密状态方法
+> - 5.更新后台UI网站统计图为动态显示
+> - 6.更新首页适应小屏幕手机
+> - 7.修复部分bug
 
 ##### V1.5.2 更新日志
 
@@ -63,8 +90,6 @@
 >* 3.已经安装过程序的，请清空数据库并清空服务器文件重新上传安装即可！
 >* 4.教程还在准备！稍等哦！
 
-#### 捐赠码，开源不易多多支持:call_me_hand:
+#**[<font style="color:red;">1.5.2版本之前需要清理数据库数据更新数据，需要重新安装，以前生成的卡密不能使用！！！</font>][1]**
 
-![](http://download.vhxkx.cn//typeraimgs/微信图片_20221022184915.jpg)
-
-![微信支付](http://download.vhxkx.cn//typeraimgs/微信图片_20221022184548.jpg)
+[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")

@@ -1,4 +1,14 @@
 <?php
+/*
+ * @Author: yihua
+ * @Date: 2025-01-04 17:32:11
+ * @LastEditTime: 2025-01-05 13:47:40
+ * @LastEditors: yihua
+ * @Description: 
+ * @FilePath: \ccproxy_end\includes\Task.php
+ * 💊物物而不物于物，念念而不念于念🍁
+ * Copyright (c) 2025 by yihua, All Rights Reserved. 
+ */
 
 /**
 
@@ -128,8 +138,8 @@ class Task
         if ($this->beforeFirstYield) {
 
             $this->beforeFirstYield = false;
-           //var_dump($this->coroutine->current());
-           //print_r($this->coroutine->current());
+            //var_dump($this->coroutine->current());
+            //print_r($this->coroutine->current());
             return $this->coroutine->current();
         } else {
 

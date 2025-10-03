@@ -1,14 +1,14 @@
 <?php
 /*
  * @Author: yihua
- * @Date: 2022-06-25 19:37:15
- * @LastEditTime: 2022-08-23 17:15:04
+ * @Date: 2025-01-04 17:57:38
+ * @LastEditTime: 2025-01-05 11:21:27
  * @LastEditors: yihua
  * @Description: 
- * @FilePath: \ccpy\install\class.php
- * 一花一叶 一行代码
+ * @FilePath: \ccproxy_end\install\class.php
+ * 💊物物而不物于物，念念而不念于念🍁
+ * Copyright (c) 2025 by yihua, All Rights Reserved. 
  */
-
 /**
  * Class install
  */
@@ -32,16 +32,15 @@ class install
         //         $string = htmlspecialchars($strip ? stripslashes($string) : $string);
         //     }
         // }
-        foreach ($string as $key=>$value) {
+        foreach ($string as $key => $value) {
             // code...
-              //var_dump($key);
-              $string[$key]=addslashes($value);
-             
+            //var_dump($key);
+            $string[$key] = addslashes($value);
         }
-        
+
         return $string;
     }
-    
+
 
     /**
      * @param $dbconfig
@@ -63,13 +62,12 @@ class install
         $data = "<?php 
         /*数据库配置*/
         $" . "dbconfig" . "=array(
-	'host' => '" . $dbconfig['host'] . "', //数据库服务器
-	'port' => " . $dbconfig['port'] . ", //数据库端口
-	'user' => '" . $dbconfig['user'] . "', //数据库用户名
-	'pwd' => '" . $dbconfig['pwd'] . "', //数据库密码
-	'dbname' => '" . $dbconfig['dbname'] . "', //数据库名
-);
-      ?>";
+	    'host' => '" . $dbconfig['host'] . "', //数据库服务器
+	    'port' => " . $dbconfig['port'] . ", //数据库端口
+	    'user' => '" . $dbconfig['user'] . "', //数据库用户名
+	    'pwd' => '" . $dbconfig['pwd'] . "', //数据库密码
+	    'dbname' => '" . $dbconfig['dbname'] . "', //数据库名
+        );?>";
         $numbytes = file_put_contents($FILE, $data);
         if ($numbytes) {
             return ['code' => 1, 'msg' => '数据更新成功！'];

@@ -1,4 +1,14 @@
 <?php
+/*
+ * @Author: yihua
+ * @Date: 2025-01-04 17:57:38
+ * @LastEditTime: 2025-01-05 10:27:54
+ * @LastEditors: yihua
+ * @Description: 
+ * @FilePath: \ccproxy_end\install\db.class.php
+ * 💊物物而不物于物，念念而不念于念🍁
+ * Copyright (c) 2025 by yihua, All Rights Reserved. 
+ */
 
 if (extension_loaded('mysqli')) {
     class DB
@@ -139,6 +149,4 @@ if (extension_loaded('mysqli')) {
             return mysql_close(self::$link);
         }
     }
-
 }
-?>

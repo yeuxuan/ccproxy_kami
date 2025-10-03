@@ -1,14 +1,14 @@
 <?php
 /*
  * @Author: yihua
- * @Date: 2022-06-25 19:32:22
- * @LastEditTime: 2022-08-23 17:07:39
+ * @Date: 2025-01-04 17:57:38
+ * @LastEditTime: 2025-01-05 11:21:19
  * @LastEditors: yihua
  * @Description: 
- * @FilePath: \ccpy\install\ajax.php
- * 一花一叶 一行代码
+ * @FilePath: \ccproxy_end\install\ajax.php
+ * 💊物物而不物于物，念念而不念于念🍁
+ * Copyright (c) 2025 by yihua, All Rights Reserved. 
  */
-
 /**
  * 安裝ajax.php文件
  */
@@ -155,7 +155,7 @@ switch ($act) {
                     die(json_encode(['code' => -1, 'msg' => '安装失败,请清空数据库后重试<br/>如果只是更新请直接填写config文件<br/>SQL成功' . $a . '句/失败' . $b . '句<br/>错误信息：' . $e]));
                 }
             }
-        }else{
+        } else {
             die(json_encode(['code' => -1, 'msg' => DB::connect_error()]));
         }
 
@@ -185,10 +185,10 @@ switch ($act) {
         if ($DBS) {
             if (DB::get_row("select * from information_schema.TABLES where TABLE_NAME  = 'sub_admin'") != null) {
                 die(json_encode(['code' => 1, 'msg' => '已经安装过']));
-            }else{
+            } else {
                 die(json_encode(['code' => 0, 'msg' => '没有安装过']));
             }
-        }else{
+        } else {
             die(json_encode(['code' => -1, 'msg' => DB::connect_error()]));
         }
         break;

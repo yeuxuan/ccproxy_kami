@@ -2,10 +2,10 @@
 /*
  * @Author: yihua
  * @Date: 2022-06-25 21:02:04
- * @LastEditTime: 2022-07-29 13:51:51
+ * @LastEditTime: 2025-01-05 16:25:26
  * @LastEditors: yihua
  * @Description: 
- * @FilePath: \ccpy\api\api.php
+ * @FilePath: \ccproxy_end\api\api.php
  * 一花一叶 一行代码
  * Copyright (c) 2022 by yihua 487735913@qq.com, All Rights Reserved. 
  */
@@ -14,7 +14,7 @@ include("../includes/common.php");
 $act=isset($_GET['act'])?daddslashes($_GET['act']):null;
 switch($act){
     case "gethostapp":
-    $application=$DB->select("select appcode,appname from application where username=\"".$subconf["username"]."\"");
+    $application=$DB->selectV2("select appcode,appname from application where username=?",[$subconf["username"]]);
     if($application){
         $code=[
             "code"=>"1",
