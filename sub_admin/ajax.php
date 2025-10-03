@@ -78,8 +78,7 @@ switch ($act) {
                         "code" => "1",
                         "msg" => "添加成功"
                     ];
-                    $cache = Cache::getInstance();
-                    $cache->clear();
+
                     // $cxserver=$DB->selectRow("SELECT applist FROM server_list WHERE ip='".addslashes($server)."'");
 
                     // $sqlserver="UPDATE server_list set applist='".((empty($cxserver['applist'])?"":$cxserver['applist'].",").$appcode)."' where ip='".addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $server))."' ";
@@ -565,6 +564,97 @@ switch ($act) {
         ];
         exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         break;
+    case "importkami":
+        try {
+            // 支持 file 上传或 text 文本域
+            $app = isset($_POST['app']) ? $_POST['app'] : null;
+            $times = isset($_POST['times']) ? $_POST['times'] : null;
+            $comment = isset($_POST['comment']) ? $_POST['comment'] : '';
+
+            if (empty($app) || empty($times)) {
+                exit(json_encode(["code" => 0, "msg" => "参数错误：app 或 times 为空"], JSON_UNESCAPED_UNICODE));
+            }
+
+            $lines = [];
+
+            if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
+                $content = file_get_contents($_FILES['file']['tmp_name']);
+                $lines = preg_split('/\r\n|\r|\n/', $content);
+            }
+
+            if (isset($_POST['text']) && !empty($_POST['text'])) {
+                $textLines = preg_split('/\r\n|\r|\n/', $_POST['text']);
+                $lines = array_merge($lines, $textLines);
+            }
+
+            if (empty($lines)) {
+                // 记录当前上传信息以便排查
+                $debugInfo = [];
+                if (isset($_FILES['file'])) {
+                    $debugInfo['file_error'] = $_FILES['file']['error'];
+                    $debugInfo['file_name'] = $_FILES['file']['name'];
+                }
+                if (isset($_POST['text'])) {
+                    $debugInfo['text_len'] = strlen($_POST['text']);
+                }
+                WriteLog("导入卡密失败", "未检测到卡密内容 " . json_encode($debugInfo), $subconf['username'], $DB);
+                exit(json_encode(["code" => 0, "msg" => "未检测到卡密内容，请检查上传文件或文本格式（可能包含特殊编码/空行）", "debug" => $debugInfo], JSON_UNESCAPED_UNICODE));
+            }
+
+            // 解析扩展参数：connection、bandwidthup、bandwidthdown
+            $connection_input = isset($_POST['connection']) ? trim($_POST['connection']) : '';
+            $bandwidthup_input = isset($_POST['bandwidthup']) ? trim($_POST['bandwidthup']) : '';
+            $bandwidthdown_input = isset($_POST['bandwidthdown']) ? trim($_POST['bandwidthdown']) : '';
+
+            $connection_val = ($connection_input === '' || !is_numeric($connection_input) || intval($connection_input) <= 0) ? -1 : intval($connection_input);
+            $bandwidthup_val = ($bandwidthup_input === '' || !is_numeric($bandwidthup_input) || intval($bandwidthup_input) <= 0) ? -1 : intval($bandwidthup_input) * 1024;
+            $bandwidthdown_val = ($bandwidthdown_input === '' || !is_numeric($bandwidthdown_input) || intval($bandwidthdown_input) <= 0) ? -1 : intval($bandwidthdown_input) * 1024;
+
+            $ext = json_encode(["connection" => $connection_val, "bandwidthup" => $bandwidthup_val, "bandwidthdown" => $bandwidthdown_val]);
+            $host = $subconf['siteurl'];
+            $sc_user = $subconf['username'];
+
+            $inserted = 0;
+            $skipped = 0;
+            foreach ($lines as $raw) {
+                $kami = trim($raw);
+                if ($kami === '') continue;
+                if (strlen($kami) > 128) {
+                    $skipped++;
+                    continue;
+                }
+                // 检查重复
+                $exists = $DB->selectRow("SELECT id FROM kami WHERE kami='" . addslashes($kami) . "'");
+                if ($exists) {
+                    $skipped++;
+                    continue;
+                }
+
+                $arr = array(
+                    'kami' => addslashes($kami),
+                    'times' => addslashes($times),
+                    'host' => addslashes($host),
+                    'sc_user' => addslashes($sc_user),
+                    'state' => 0,
+                    'app' => addslashes($app),
+                    'comment' => addslashes($comment),
+                    'ext' => $ext
+                );
+
+                $exec = $DB->insert('kami', $arr);
+                if ($exec) {
+                    $inserted++;
+                } else {
+                    $skipped++;
+                }
+            }
+
+            WriteLog("导入卡密", "导入: 成功{$inserted}，跳过{$skipped}", $subconf['username'], $DB);
+            exit(json_encode(["code" => 1, "msg" => "导入完成：成功 {$inserted} 条，跳过 {$skipped} 条"], JSON_UNESCAPED_UNICODE));
+        } catch (Exception $e) {
+            exit(json_encode(handleError($e, 'importkami', $DB, $subconf), JSON_UNESCAPED_UNICODE));
+        }
+        break;
     case "delkami":
         $arr = $_POST['item'];
         if ($arr == null || !(isset($arr)) || empty($arr)) {
@@ -985,6 +1075,233 @@ switch ($act) {
         $cache->clear();
         WriteLog("批量删除用户", "删除了" . $deldata, $subconf['username'], $DB);
         exit(json_encode($code, JSON_UNESCAPED_UNICODE));
+        break;
+    case 'delallexpired':
+        try {
+            // payload 支持：users([{user,serverip}...]) 或 app(字符串) 或 不传（全站）
+            $users_payload = isset($_POST['users']) ? $_POST['users'] : null;
+            $app_payload = isset($_POST['app']) ? trim($_POST['app']) : null;
+
+            $candidates = [];
+
+            if (!empty($users_payload) && is_array($users_payload)) {
+                // 前端传入选中的用户数组（user, serverip）
+                foreach ($users_payload as $u) {
+                    if (empty($u['user']) || empty($u['serverip'])) continue;
+                    $candidates[] = ['user' => $u['user'], 'serverip' => $u['serverip']];
+                }
+            } else {
+                // 根据 app_payload 决定范围（app为空表示全站）
+                $ser = SerchearchAllServer($app_payload ? $app_payload : '', '', $DB);
+                if (!$ser) throw new Exception('获取服务器列表失败');
+                $user_data = array();
+                while ($ser->valid()) {
+                    $current = $ser->current();
+                    if (!empty($current)) array_push($user_data, $current);
+                    $ser->next();
+                }
+                if (empty($user_data)) {
+                    exit(json_encode(["code"=>0, "msg"=>"未发现用户数据或无法连接服务器"] , JSON_UNESCAPED_UNICODE));
+                }
+                $result = array_reduce($user_data, function ($res, $value) {
+                    if (!is_array($value)) return $res;
+                    return array_merge($res ?: [], array_values($value));
+                }, []);
+                // 转换为简化候选数组
+                foreach ($result as $it) {
+                    if (isset($it['user']) && isset($it['serverip'])) {
+                        $candidates[] = ['user' => $it['user'], 'serverip' => $it['serverip'], 'autodisable' => $it['autodisable'], 'expire' => $it['expire']];
+                    }
+                }
+            }
+
+            $scheduler = new Scheduler;
+            $total = count($candidates);
+            $deleted = 0;
+            $failed = 0;
+
+            foreach ($candidates as $item) {
+                // 如果候选项没有 expire/autodisable 信息（来自前端用户选择），需要查询服务器以确认是否已到期
+                $needCheck = !isset($item['expire']) || !isset($item['autodisable']);
+                if ($needCheck) {
+                    // 从 server_list 获取该服务器行信息，然后调用 queryuserall
+                    $serverRow = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . addslashes($item['serverip']) . "'");
+                    if (!$serverRow) {
+                        $failed++;
+                        continue;
+                    }
+                    try {
+                        $alldata = queryuserall($serverRow['password'], $serverRow['cport'], $serverRow['ip']);
+                    } catch (Exception $e) {
+                        $failed++;
+                        continue;
+                    }
+                    $found = null;
+                    if (is_array($alldata)) {
+                        foreach ($alldata as $u) {
+                            if (isset($u['user']) && $u['user'] == $item['user']) { $found = $u; break; }
+                        }
+                    }
+                    if ($found) {
+                        $item['autodisable'] = isset($found['autodisable']) ? $found['autodisable'] : 1;
+                        $item['expire'] = isset($found['expire']) ? $found['expire'] : 0;
+                    } else {
+                        // 无法确认，跳过
+                        $failed++;
+                        continue;
+                    }
+                }
+                // 跳过永久账号
+                if (isset($item['autodisable']) && $item['autodisable'] == 0) {
+                    continue;
+                }
+                // 只删除已到期
+                if (!isset($item['expire']) || $item['expire'] != 1) {
+                    continue;
+                }
+                try {
+                    $scheduler->addTask(DelUser($item['user'], $item['serverip'], $DB));
+                    $res = $scheduler->run();
+                    if ($res) {
+                        $deleted++;
+                    } else {
+                        $failed++;
+                    }
+                } catch (Exception $e) {
+                    $failed++;
+                    continue;
+                }
+            }
+
+            // 清理缓存
+            $cache = Cache::getInstance(); if ($cache) $cache->clear();
+            WriteLog('删除到期用户', "共处理{$total}条，成功{$deleted}，失败{$failed}", $subconf['username'], $DB);
+
+            $code = ["code"=>1, "msg"=>"删除完成：成功{$deleted}，失败{$failed}", "total"=>$total, "success"=>$deleted, "fail"=>$failed];
+            exit(json_encode($code, JSON_UNESCAPED_UNICODE));
+        } catch (Exception $e) {
+            exit(json_encode(handleError($e, 'delallexpired', $DB, $subconf), JSON_UNESCAPED_UNICODE));
+        }
+        break;
+    case 'addtimeall':
+        try {
+            // 支持参数：amount(数字，可为负)，unit(days|hours)，app，可选 users([{user,serverip},...])
+            $amount = isset($_POST['amount']) ? floatval($_POST['amount']) : null;
+            $unit = isset($_POST['unit']) ? $_POST['unit'] : 'days';
+            $app = isset($_POST['app']) ? $_POST['app'] : '';
+            $users_post = isset($_POST['users']) ? $_POST['users'] : null;
+
+            if ($amount === null || $amount == 0) {
+                throw new Exception('无效的加/减时数量');
+            }
+            if (!in_array($unit, ['days', 'hours'])) {
+                throw new Exception('单位错误');
+            }
+
+            // 计算秒数（可为负）
+            $seconds = ($unit == 'days') ? ($amount * 86400) : ($amount * 3600);
+
+            $result = [];
+
+            if (!empty($users_post) && is_array($users_post)) {
+                // 前端传入的是选中用户（user, serverip），我们需要查询每个服务器的用户详情
+                foreach ($users_post as $u) {
+                    if (empty($u['user']) || empty($u['serverip'])) continue;
+                    $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . addslashes($u['serverip']) . "'");
+                    if (!$server) continue;
+                    // 获取该服务器上的全部用户信息
+                    $alldata = queryuserall($server['password'], $server['cport'], $server['ip']);
+                    if (empty($alldata) || !is_array($alldata)) continue;
+                    foreach ($alldata as $entry) {
+                        if (isset($entry['user']) && $entry['user'] == $u['user']) {
+                            $entry['serverip'] = $server['ip'];
+                            array_push($result, $entry);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                // 使用应用或全部服务器来获取用户列表
+                $ser = SerchearchAllServer($app, '', $DB);
+                if (!$ser) {
+                    throw new Exception('获取服务器列表失败');
+                }
+                $user_data = array();
+                while ($ser->valid()) {
+                    $current = $ser->current();
+                    if (!empty($current)) {
+                        array_push($user_data, $current);
+                    }
+                    $ser->next();
+                }
+                if (empty($user_data)) {
+                    throw new Exception('未找到用户数据');
+                }
+                $result = array_reduce($user_data, function ($res, $value) {
+                    if (!is_array($value)) return $res;
+                    return array_merge($res ?: [], array_values($value));
+                }, []);
+            }
+
+            if (empty($result)) {
+                throw new Exception('用户数据处理失败或为空');
+            }
+
+            $success = 0;
+            $fail = 0;
+
+            foreach ($result as $key => $user) {
+                try {
+                    // 跳过永久账户
+                    if (isset($user['autodisable']) && $user['autodisable'] == 0) {
+                        continue;
+                    }
+                    $current_disable = isset($user['disabletime']) ? $user['disabletime'] : date('Y-m-d H:i:s');
+                    $ts = strtotime($current_disable);
+                    if ($ts === false) $ts = time();
+                    $new_ts = $ts + intval(round($seconds));
+                    $new_disable = date('Y-m-d H:i:s', $new_ts);
+
+                    // 获取 server 行信息
+                    $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $user['serverip'] . "'");
+                    if (!$server) {
+                        $fail++;
+                        continue;
+                    }
+
+                    // 确保必要字段存在，提供合理默认
+                    $pwd = isset($user['pwd']) ? $user['pwd'] : '';
+                    $connection = isset($user['connection']) ? ($user['connection'] == -1 ? -1 : $user['connection']) : -1;
+                    $bandwidthup = isset($user['bandwidthup']) ? $user['bandwidthup'] : -1;
+                    $bandwidthdown = isset($user['bandwidthdown']) ? $user['bandwidthdown'] : -1;
+
+                    $res = UserUpdate($server['password'], $server['cport'], $server['ip'], $user['user'], $pwd, $new_disable, $connection, $bandwidthup, $bandwidthdown);
+                    if (is_array($res) && isset($res['code']) && $res['code'] == '1') {
+                        $success++;
+                    } else {
+                        $fail++;
+                    }
+                } catch (Exception $e) {
+                    $fail++;
+                    continue;
+                }
+            }
+
+            // 清理缓存
+            $cache = Cache::getInstance();
+            if ($cache) $cache->clear();
+
+            WriteLog('批量加减时', "操作: {$amount} {$unit} 应用:{$app}  成功 {$success}，失败 {$fail}", $subconf['username'], $DB);
+
+            $code = [
+                'code' => 1,
+                'msg' => "操作完成：成功 {$success}，失败 {$fail}"
+            ];
+            exit(json_encode($code, JSON_UNESCAPED_UNICODE));
+
+        } catch (Exception $e) {
+            exit(json_encode(handleError($e, 'addtimeall', $DB, $subconf), JSON_UNESCAPED_UNICODE));
+        }
         break;
     case 'adduser':
         $user_data = $_POST["userdata"];

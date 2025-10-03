@@ -27,10 +27,20 @@ include("./includes/common.php");
     <link rel="stylesheet" type="text/css" href="./assets/css/style_PC.css" media="screen and (min-width: 960px)" />
     <!-- <link rel="stylesheet" type="text/css" href="./assets/css/style_Phone.css" media="screen and (min-width: 720px)" /> -->
     <style type="text/css">
-        /* 全局样式 */
+        /* 全局样式 - 科技感配色 */
+        :root{
+            --bg:#0f1724; /* 深色背景 */
+            --panel:#0b1220;
+            --accent:#6ee7f9; /* 青蓝 */
+            --accent2:#7c3aed; /* 紫色 */
+            --muted: rgba(255,255,255,0.65);
+        }
         body {
-            background: #f5f7fa;
-            color: #333;
+            background: radial-gradient(ellipse at top left, rgba(124,58,237,0.08), transparent 20%), linear-gradient(180deg,#071024 0%, #071a2a 100%);
+            color: var(--muted);
+            font-family: "Nunito", "Helvetica Neue", Arial, "PingFang SC", "Microsoft Yahei", sans-serif;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
         }
 
         .layui-container {
@@ -40,26 +50,70 @@ include("./includes/common.php");
             animation: fadeInUp 0.8s ease-out;
         }
 
+        /* 顶部跑马灯样式 */
+        .top-marquee {
+            margin: 12px auto 20px;
+            max-width: 1000px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: linear-gradient(90deg, rgba(124,58,237,0.12), rgba(110,231,249,0.06));
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+            position: relative;
+            height: 48px;
+            display:flex;
+            align-items:center;
+        }
+        .marquee-track {
+            white-space:nowrap;
+            display:inline-block;
+            will-change:transform;
+            animation: marquee 18s linear infinite;
+            padding-left:100%;
+            font-weight:600;
+            color:var(--accent);
+            font-size:16px;
+        }
+        .marquee-item{display:inline-block;margin-right:48px;color:var(--muted)}
+        @keyframes marquee{
+            from{transform:translateX(0%)}
+            to{transform:translateX(-100%)}
+        }
+
         /* Logo区域样式优化 */
         .layui-logo {
             padding: 30px 0;
             text-align: center;
+            color:var(--muted);
+        }
+
+        /* 覆盖外部样式表中对 .layui-logo 的白底设置（theme.css / style_PC.css），避免白色背景遮挡文字 */
+        .layui-logo{
+            background: transparent !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding-top: 30px !important;
+            padding-bottom: 30px !important;
+            color: var(--muted) !important;
         }
 
         .wz-title h1 {
             font-size: 2em;
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 600;
+            color: #fff;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
             animation: fadeInUp 0.8s ease-out;
+            text-shadow: 0 6px 18px rgba(124,58,237,0.12);
         }
 
         .img img {
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 300px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+            max-width: 280px;
             width: 100%;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border:1px solid rgba(255,255,255,0.03);
         }
 
         .img img:hover {
@@ -76,12 +130,13 @@ include("./includes/common.php");
         }
 
         .cer .layui-btn {
-            padding: 0 25px;
+            padding: 0 22px;
             height: 40px;
             line-height: 40px;
             border-radius: 20px;
             font-size: 14px;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.24s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 6px 20px rgba(2,6,23,0.45);
         }
 
         .cer .buwz {
@@ -95,11 +150,12 @@ include("./includes/common.php");
 
         /* 主面板样式 */
         .main {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            padding: 20px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(2,6,23,0.6);
+            padding: 22px;
             margin-top: 20px;
+            border:1px solid rgba(255,255,255,0.03);
         }
 
         /* 选项卡样式 */
@@ -115,12 +171,12 @@ include("./includes/common.php");
         }
 
         .layui-tab-title .layui-this {
-            color: #009688;
+            color: var(--accent);
         }
 
         .layui-tab-title .layui-this:after {
             height: 2px;
-            background-color: #009688;
+            background: linear-gradient(90deg,var(--accent),var(--accent2));
         }
 
         .layui-tab-title li:after {
@@ -206,21 +262,52 @@ include("./includes/common.php");
         .time div {
             box-sizing: border-box;
             padding: 15px;
-            background-color: #f8f8f8;
-            border: 1px solid #e6e6e6;
-            border-radius: 8px;
+            background-color: rgba(255,255,255,0.02); /* 深色主题卡片 */
+            border: 1px solid rgba(255,255,255,0.03);
+            color: var(--muted);
+            border-radius: 14px; /* 更圆润的角 */
+            transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
             transition: all 0.3s ease;
             animation: fadeInUp 0.5s ease-out;
         }
 
         .time div:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 18px rgba(2,6,23,0.6);
         }
 
         .time div b {
-            color: #009688;
-            font-weight: 500;
+            color: var(--accent);
+            font-weight: 600;
         }
+
+        /* 深色毛玻璃提示卡片（用于查询结果等中间提示） - 强制覆盖外部样式 */
+        .msg-dark{
+            padding: 10px 14px !important;
+            border-radius: 14px !important;
+            /* 更明显的深色背景，避免白底 */
+            background: rgba(11,18,32,0.72) !important;
+            border: 1px solid rgba(255,255,255,0.04) !important;
+            color: var(--muted) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.55) !important;
+            margin-bottom: 12px !important;
+            font-size: 13px !important;
+            line-height: 1.8em !important;
+        }
+        .msg-dark b{ color: var(--accent) !important; font-weight:700 !important; }
+
+        /* 更强覆盖：确保 .time 下的任何提示元素不会被外部白底规则覆盖 */
+        .layui-container .time, .layui-container .time div, .layui-container .time .msg-dark {
+            background: transparent !important;
+            color: var(--muted) !important;
+        }
+        .layui-container .time div, .layui-container .time .msg-dark {
+            background: rgba(11,18,32,0.64) !important;
+            border: 1px solid rgba(255,255,255,0.04) !important;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.45) !important;
+        }
+        .layui-container .time div b { color: var(--accent) !important; }
 
         /* 添加移动端选项卡样式优化 */
         @media screen and (max-width: 480px) {
@@ -274,19 +361,179 @@ include("./includes/common.php");
             }
         }
 
+        /* 轻微背景颗粒（用伪元素做轻量效果） */
+        .layui-container:before{
+            content:'';
+            position:fixed;
+            left:0;right:0;top:0;bottom:0;
+            background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events:none;
+            opacity:0.25;
+            mix-blend-mode:overlay;
+        }
+
+        /* 覆盖 layui-card 的默认白底（仅作用于 logo 区），让 logo 区与深色主题一致 */
+        .layui-logo .layui-card{
+            background: transparent !important;
+            border: 1px solid rgba(255,255,255,0.03) !important;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.55) !important;
+            padding: 18px !important;
+        }
+
+        /* 更强的替代方案：自定义卡片类，避免被 Layui 深层选择器或脚本注入的样式影响 */
+        .custom-card{
+            background: transparent !important;
+            border: 1px solid rgba(255,255,255,0.03) !important;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.55) !important;
+            padding: 18px !important;
+            color: var(--muted) !important;
+        }
+        .custom-card, .custom-card * , .custom-card .layui-card-body, .custom-card .layui-card-header {
+            background: transparent !important;
+            color: inherit !important;
+            border-color: rgba(255,255,255,0.03) !important;
+        }
+
+        /* 强制 logo 区标题和文本颜色，避免被全局白色文本规则覆盖 */
+        .layui-logo .wz-title h1, .custom-card .wz-title h1 {
+            color: #ffffff !important;
+            text-shadow: 0 6px 18px rgba(124,58,237,0.18) !important;
+        }
+
+        /* 按钮文字对比 */
+        .custom-card .cer .layui-btn, .layui-logo .cer .layui-btn {
+            color: #071024 !important; /* 深色文字在亮色按钮上 */
+        }
+        .custom-card .cer .layui-btn.layui-btn-danger, .layui-logo .cer .layui-btn.layui-btn-danger{
+            color: #fff !important;
+        }
+
+        /* 覆盖可能存在的 card-body 或内层元素的白色背景（确保彻底去除白底） */
+        .layui-logo .layui-card, .layui-logo .layui-card .layui-card-body, .layui-logo .layui-card .layui-card-header {
+            background: transparent !important;
+            color: var(--muted) !important;
+        }
+
+        /* 确保 logo 区内部元素不被白底或深色外的颜色覆盖 */
+        .layui-logo .layui-card * {
+            background: transparent !important;
+            color: inherit !important;
+            border-color: rgba(255,255,255,0.03) !important;
+        }
+
+        /* 按钮（公告/客服/网盘）——只修改 logo 区内的样式，避免影响全站其它按钮 */
+        .layui-logo .cer .layui-btn{
+            background: linear-gradient(90deg,var(--accent),var(--accent2)) !important;
+            color: #071024 !important;
+            border: none !important;
+            box-shadow: 0 8px 24px rgba(124,58,237,0.12) !important;
+        }
+        .layui-logo .cer .layui-btn.layui-btn-danger{
+            background: linear-gradient(90deg,#ff7a7a,#ff4d4d) !important;
+            color:#fff !important;
+        }
+        .layui-logo .cer .layui-btn.layui-btn-normal{
+            background: linear-gradient(90deg,var(--accent),#34d399) !important;
+            color:#071024 !important;
+        }
+        .layui-logo .cer .layui-btn.layui-btn-checked{
+            background: linear-gradient(90deg,#7c3aed,var(--accent)) !important;
+            color:#fff !important;
+        }
+
+        /* 图片容器加深色背景，突出 logo */
+        .layui-logo .img{
+            display:inline-block;
+            padding:10px;
+            border-radius:12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border:1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 8px 30px rgba(2,6,23,0.5);
+        }
+        .layui-logo .img img{ background:transparent !important; }
+
         /* 选项卡切换动画 */
         .layui-tab-content .layui-tab-item {
             transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+    <!-- 强制性覆盖：确保 SweetAlert / layer / qmsg 在页面中显示为深色毛玻璃（放在 head 末尾，优先级高） -->
+    <style>
+        /* Modal overlays */
+        .sweet-overlay, .swal-overlay {
+            background-color: rgba(0,0,0,0.6) !important;
+        }
+        /* SweetAlert modal */
+        .sweet-alert, .swal-modal {
+            /* 使用透明背景以保持页面深色主题下的通透感，保留边框/阴影/模糊 */
+            background: transparent !important;
+            color: #e6eef8 !important;
+            border: 1px solid rgba(255,255,255,0.04) !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7) !important;
+            backdrop-filter: blur(6px) !important;
+        }
+        .sweet-alert h2, .sweet-alert p, .swal-text { color: #e6eef8 !important; }
+        .sweet-alert input, .swal-modal input, .swal-modal textarea {
+            background: rgba(255,255,255,0.03) !important;
+            color: #e6eef8 !important;
+            border: 1px solid rgba(255,255,255,0.06) !important;
+        }
+
+        /* Fix: 禁用 success 图标的白色旋转占位（:before / :after）在深色主题下的可见性问题 */
+        .swal-icon--success:before,
+        .swal-icon--success:after {
+            /* 取消白色块背景，转为透明（保留对勾动画或使用 JS 处理） */
+            background: transparent !important;
+            box-shadow: none !important;
+            /* 取消库里内嵌的旋转占位动画，避免看到两个白色旋转层 */
+            -webkit-animation: none !important;
+            animation: none !important;
+            /* 确保不会遮挡对勾 */
+            z-index: 0 !important;
+        }
+        /* 强制对 before/after 的变换为与对勾一致，避免不一致的角度导致错位 */
+        .swal-icon--success:before { -webkit-transform: rotate(-45deg) !important; transform: rotate(-45deg) !important; }
+        .swal-icon--success:after  { -webkit-transform: rotate(-45deg) !important; transform: rotate(-45deg) !important; }
+
+        /* 隐藏用于白色背景遮角的元素（库原始样式），避免在深色主题上出现白色角块 */
+        .swal-icon--success__hide-corners{ display:none !important; background:transparent !important; }
+
+        /* 确保对勾线在最上层且颜色为深色主题友好色 */
+        .swal-icon--success__line{ z-index:3 !important; background-color: rgba(51,202,187,0.95) !important; }
+
+        /* layui layer */
+        .layui-layer, .layui-layer-content, .layui-layer-title, .layui-layer-msg {
+            /* 透明背景，保留其它视觉效果 */
+            background: transparent !important;
+            color: #e6eef8 !important;
+            border: 1px solid rgba(255,255,255,0.04) !important;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6) !important;
+        }
+
+        /* Ensure announcement buttons inside logo area are visible */
+        .layui-logo .layui-btn, .custom-card .layui-btn {
+            background: linear-gradient(90deg,#2db6b6,#1a9bd6) !important;
+            color: #071024 !important;
+            border: none !important;
         }
     </style>
 </head>
 
 <body>
     <div class="layui-container">
+        <!-- 顶部跑马灯 -->
+        <div class="top-marquee">
+            <div class="marquee-track" id="marqueeTrack">
+                <span class="marquee-item">欢迎来到 <?php echo $subconf['hostname']; ?> —— 高性能代理服务平台</span>
+                <span class="marquee-item">支持卡密、注册、在线查询与客服对接</span>
+                <span class="marquee-item">实时监控 · 安全稳定 · 企业级体验</span>
+            </div>
+        </div>
         <!-- logo部分 -->
         <div class="layui-logo">
             <div class="layui-row">
-                <div class="layui-card layui-col-xs12">
+                <div class="custom-card layui-col-xs12" style="background:transparent !important;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.55);padding:18px;">
                     <div class="wz-title">
                         <h1><?php echo $subconf['hostname']; ?></h1>
                     </div>
@@ -296,13 +543,13 @@ include("./includes/common.php");
                     </div>
                     <div class="layui-col-xs-12 cer">
                         <a class="buwz" style="color:white" onclick="<?php echo $subconf['ggswitch'] == 1 ? "showgg()" : "notgg()"; ?>">
-                            <div class="layui layui-btn layui-btn-danger">公告</div>
+                            <div class="layui-btn layui-btn-danger" style="background:linear-gradient(90deg,#ff7a7a,#ff4d4d);color:#fff;border:none;">公告</div>
                         </a>
                         <a class="buwz" style="color:white" href="<?php echo $subconf['kf']; ?>">
-                            <div class="layui layui-btn layui-btn-normal">客服</div>
+                            <div class="layui-btn layui-btn-normal" style="background:linear-gradient(90deg,var(--accent),#34d399);color:#071024;border:none;">客服</div>
                         </a>
                         <a class="buwz" style="color:white" href="<?php echo $subconf['pan']; ?>">
-                            <div class="layui layui-btn layui-btn-checked">网盘</div>
+                            <div class="layui-btn layui-btn-checked" style="background:linear-gradient(90deg,#7c3aed,var(--accent));color:#fff;border:none;">网盘</div>
                         </a>
                     </div>
                 </div>
@@ -632,13 +879,31 @@ include("./includes/common.php");
                 }
             }
 
-            // 更新查询结果
+            // 更新查询结果（使用深色毛玻璃样式，提升可读性）
             function updateQueryResult(msg) {
-                $(".time").eq(0).html(`
-                    <div style='padding: 10px; border: 1px solid #c3e6cb; color: #155724; font-size: 12px; line-height: 2em; background-color: #e8f8f5; margin-bottom: 10px;'>
-                        <b>${msg}</b>
-                    </div>
-                `);
+                // Use inline styles with !important to make this insertion as high-priority as possible
+                var html = `\
+                    <div class="msg-dark" style="border-radius:14px !important; overflow:hidden !important; background: rgba(11,18,32,0.72) !important; border: 1px solid rgba(255,255,255,0.04) !important; box-shadow: 0 8px 30px rgba(2,6,23,0.45) !important; -webkit-backdrop-filter: blur(6px) !important; backdrop-filter: blur(6px) !important; color: var(--muted) !important;">\
+                        <b>${msg}</b>\
+                    </div>\
+                `;
+
+                $(".time").eq(0).html(html);
+
+                // Immediately reinforce the styles on the newly-inserted element using setProperty with 'important'
+                try{
+                    var el = document.querySelector('.time .msg-dark');
+                    if(el){
+                        el.style.setProperty('border-radius','14px','important');
+                        el.style.setProperty('overflow','hidden','important');
+                        el.style.setProperty('background','rgba(11,18,32,0.72)','important');
+                        el.style.setProperty('border','1px solid rgba(255,255,255,0.04)','important');
+                        el.style.setProperty('box-shadow','0 8px 30px rgba(2,6,23,0.45)','important');
+                        el.style.setProperty('backdrop-filter','blur(6px)','important');
+                        el.style.setProperty('-webkit-backdrop-filter','blur(6px)','important');
+                        el.style.setProperty('color','var(--muted)','important');
+                    }
+                }catch(e){}
             }
 
             // 检查屏幕尺寸
@@ -709,7 +974,233 @@ include("./includes/common.php");
                 });
             }
         });
+
+        /* 跑马灯控制：悬停暂停、自动调整速度、尝试从后端拉取消息 */
+        (function(){
+            var $track = $('#marqueeTrack');
+            var $wrap = $('.top-marquee');
+
+            function adjustMarquee(){
+                try{
+                    var wrapW = $wrap.width() || window.innerWidth;
+                    var trackW = $track.prop('scrollWidth') || $track.width();
+                    // duration 基于文字长度，至少 10s，最多 60s
+                    var duration = Math.max(10, Math.min(60, Math.round(trackW / 40)));
+                    $track.css('animation-duration', duration + 's');
+                }catch(e){}
+            }
+
+            function pauseMarquee(){ $track.css('animation-play-state','paused'); }
+            function resumeMarquee(){ $track.css('animation-play-state','running'); }
+
+            $wrap.on('mouseenter', pauseMarquee).on('mouseleave', resumeMarquee);
+            $(window).on('resize', function(){ setTimeout(adjustMarquee, 120); });
+
+            // 可选：从后端拉取跑马灯消息（接口不存在时会安静失败）
+            async function loadMarqueeRemote(){
+                try{
+                    var res = await API.request('api/api.php?act=getmarquee', {} , { type: 'GET' });
+                    if(res && (res.code==1 || res.code=="1") && res.msg){
+                        var items = [];
+                        if(Array.isArray(res.msg)) items = res.msg;
+                        else if(typeof res.msg === 'string') items = [res.msg];
+                        if(items.length>0){
+                            var html = items.map(function(it){ return '<span class="marquee-item">'+it+'</span>'; }).join('');
+                            // 为了连续滚动，把内容重复一次
+                            $track.html(html + html);
+                            setTimeout(adjustMarquee, 80);
+                            return;
+                        }
+                    }
+                }catch(e){/* ignore */}
+                // fallback: 如果没有远程数据，确保速度正确
+                setTimeout(adjustMarquee, 80);
+            }
+
+            // 初始化
+            $(function(){
+                // small delay to ensure fonts/images loaded
+                setTimeout(function(){ adjustMarquee(); loadMarqueeRemote(); }, 150);
+            });
+        })();
     </script>
+    <script>
+        // Ensure modals/overlays (SweetAlert / layui layer) are styled darkly even if external CSS overrides persist.
+        (function(){
+            function styleModal(el){
+                try{
+                    // keep transparency so modal blends with page background
+                    el.style.setProperty('background','transparent','important');
+                    el.style.setProperty('color','#e6eef8','important');
+                    el.style.setProperty('border','1px solid rgba(255,255,255,0.04)','important');
+                    el.style.setProperty('box-shadow','0 12px 40px rgba(0,0,0,0.7)','important');
+                    el.style.setProperty('backdrop-filter','blur(6px)','important');
+                    el.style.setProperty('-webkit-backdrop-filter','blur(6px)','important');
+                }catch(e){}
+            }
+            function styleOverlay(el){
+                try{ el.style.setProperty('background-color','rgba(0,0,0,0.6)','important'); }catch(e){}
+            }
+
+            // Specifically adjust SweetAlert success icon ring so it looks correct on dark backgrounds
+            function styleSweetSuccessIcon(root){
+                try{
+                    var rings = root.querySelectorAll && root.querySelectorAll('.swal-icon--success__ring');
+                    if(rings && rings.length){
+                        rings.forEach(function(r){
+                            // apply dark-theme friendly ring
+                            r.style.background = 'transparent';
+                            r.style.border = '4px solid rgba(51,202,187,0.18)';
+                            r.style.boxSizing = 'content-box';
+                            r.style.boxShadow = '0 0 12px rgba(51,202,187,0.06)';
+                            r.style.left = (r.style.left||'-4px');
+                            r.style.top = (r.style.top||'-4px');
+                            r.style.zIndex = '1';
+                        });
+                    }
+
+                    // Hide or neutralize the white corner masks which were designed for a white background
+                    var hides = root.querySelectorAll && root.querySelectorAll('.swal-icon--success__hide-corners');
+                    if(hides && hides.length){
+                        hides.forEach(function(h){
+                            h.style.background = 'transparent';
+                            h.style.display = 'none';
+                        });
+                    }
+
+                    // Ensure success lines (the checkmark) stay above the ring
+                    var lines = root.querySelectorAll && root.querySelectorAll('.swal-icon--success__line');
+                    if(lines && lines.length){
+                        lines.forEach(function(l){
+                            l.style.zIndex = '3';
+                            l.style.backgroundColor = 'rgba(51,202,187,0.95)';
+                        });
+                    }
+                }catch(e){}
+            }
+
+            function applyOnce(node){
+                if(node.classList){
+                    if(node.classList.contains('sweet-alert')||node.classList.contains('swal-modal')||node.classList.contains('swal-overlay')){
+                        styleModal(node);
+                        styleSweetSuccessIcon(node);
+                    }
+                    if(node.classList.contains('sweet-overlay')) styleOverlay(node);
+                    if(node.classList.contains('layui-layer')||node.classList.contains('layui-layer-content')||node.classList.contains('layui-layer-msg')) styleModal(node);
+                }
+            }
+
+            var obs = new MutationObserver(function(muts){
+                muts.forEach(function(m){
+                    m.addedNodes && m.addedNodes.forEach(function(n){
+                        if(n.nodeType!==1) return;
+                        applyOnce(n);
+                        try{ 
+                            if(n.querySelectorAll){
+                                n.querySelectorAll('.sweet-alert,.swal-modal,.swal-overlay,.layui-layer,.layui-layer-content,.layui-layer-msg').forEach(applyOnce);
+                                // also handle success icons in case library inserts them deeper
+                                n.querySelectorAll('.swal-icon--success__ring,.swal-icon--success__hide-corners,.swal-icon--success__line').forEach(function(dummy){
+                                    // find closest modal root
+                                    var root = dummy.closest('.swal-modal') || dummy.closest('.sweet-alert') || document;
+                                    styleSweetSuccessIcon(root);
+                                });
+                            }
+                        }catch(e){}
+                    });
+                });
+            });
+            obs.observe(document.documentElement||document.body, {childList:true, subtree:true});
+            // initial pass
+            try{ 
+                document.querySelectorAll('.sweet-alert,.swal-modal,.sweet-overlay,.layui-layer,.layui-layer-content,.layui-layer-msg').forEach(applyOnce);
+                // initial adjust for any success icons already present
+                styleSweetSuccessIcon(document);
+            }catch(e){}
+        })();
+    </script>
+        <script>
+            // Enforce rounded, frosted style for central .time results (handles inline styles / later CSS overrides)
+            (function(){
+                var enforcedRadius = '14px';
+                var enforcedBg = 'rgba(11,18,32,0.72)';
+                function enforce(node){
+                    try{
+                        if(!node || node.nodeType!==1) return;
+                        if(node.matches && (node.matches('.time div') || node.matches('.msg-dark') || node.closest && node.closest('.time'))){
+                            node.style.setProperty('border-radius', enforcedRadius, 'important');
+                            node.style.setProperty('overflow', 'hidden', 'important');
+                            node.style.setProperty('background', enforcedBg, 'important');
+                            node.style.setProperty('border', '1px solid rgba(255,255,255,0.04)', 'important');
+                            node.style.setProperty('box-shadow', '0 8px 30px rgba(2,6,23,0.45)', 'important');
+                            node.style.setProperty('backdrop-filter', 'blur(6px)', 'important');
+                            node.style.setProperty('-webkit-backdrop-filter', 'blur(6px)', 'important');
+                            node.style.setProperty('color', 'var(--muted)', 'important');
+                        }
+                        // also ensure direct children don't draw white backgrounds beyond rounded corners
+                        if(node.querySelectorAll){
+                            node.querySelectorAll && node.querySelectorAll('.time div, .msg-dark').forEach(function(n){
+                                n.style.setProperty('border-radius', enforcedRadius, 'important');
+                                n.style.setProperty('overflow', 'hidden', 'important');
+                                n.style.setProperty('background', enforcedBg, 'important');
+                            });
+                        }
+                    }catch(e){}
+                }
+
+                var obs = new MutationObserver(function(muts){
+                    muts.forEach(function(m){
+                        m.addedNodes && m.addedNodes.forEach(function(n){
+                            enforce(n);
+                            if(n.querySelectorAll){
+                                n.querySelectorAll('.time div, .msg-dark').forEach(enforce);
+                            }
+                        });
+                        // attribute changes (inline style changes) on existing nodes
+                        if(m.type === 'attributes' && m.target){
+                            enforce(m.target);
+                        }
+                    });
+                });
+
+                // observe additions and attribute changes that might remove/override border-radius
+                obs.observe(document.documentElement||document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['style','class'] });
+
+                // initial pass
+                try{
+                    document.querySelectorAll('.time div, .msg-dark').forEach(function(n){ enforce(n); });
+                }catch(e){}
+            })();
+        </script>
+        <style id="force-time-msg-style">
+            /* Last-resort forced styles for the central result card and its pseudo-elements/children */
+            .layui-container .time,
+            .layui-container .time > div,
+            .layui-container .time .msg-dark,
+            .layui-container .time > div::before,
+            .layui-container .time > div::after,
+            .layui-container .time .msg-dark::before,
+            .layui-container .time .msg-dark::after,
+            .layui-container .time * {
+                border-radius: 14px !important;
+                overflow: hidden !important;
+                background: rgba(11,18,32,0.72) !important;
+                border: 1px solid rgba(255,255,255,0.04) !important;
+                box-shadow: 0 8px 30px rgba(2,6,23,0.45) !important;
+                color: var(--muted) !important;
+                -webkit-backdrop-filter: blur(6px) !important;
+                backdrop-filter: blur(6px) !important;
+                -webkit-mask-image: none !important;
+                mask-image: none !important;
+                background-clip: padding-box !important;
+            }
+            /* Neutralize any white masks inserted by libraries inside the card */
+            .layui-container .time .swal-icon--success__hide-corners,
+            .layui-container .time .swal-icon--success:before,
+            .layui-container .time .swal-icon--success:after {
+                display: none !important;
+                background: transparent !important;
+            }
+        </style>
 </body>
 
 </html>

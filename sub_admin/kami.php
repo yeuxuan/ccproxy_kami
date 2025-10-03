@@ -18,7 +18,18 @@ include("foot.php");
 			.layui-form-checked span, .layui-form-checked:hover span{
 				background-color: #33cabb!important;
 			}
-			
+			/* 导入弹窗样式：与新增卡密风格一致，去掉毛玻璃效果 */
+			.imp-backdrop{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+			.imp-card{width:100%;max-width:640px;background:#FFFFFF;border-radius:8px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #e9e9e9;color:#333}
+			.imp-header{font-size:18px;color:#333;padding-bottom:8px;font-weight:600}
+			.imp-body{color:#555}
+			.imp-row{display:flex;gap:12px;margin-bottom:12px}
+			.imp-col{flex:1}
+			.imp-select{padding:6px}
+			.imp-textarea{width:100%;height:120px;border-radius:6px;padding:8px;border:1px solid #e6e6e6;background:#fff;color:#333}
+			.file-row input[type=file]{background:transparent}
+			.imp-card input.layui-input{background:#fff;border-radius:6px;border:1px solid #e6e6e6;color:#333}
+			/* 轻量淡入动画（基于 jQuery fadeIn/slideDown 在打开时触发） */
 		</style>
 		<!-- <link rel="stylesheet" href="../assets/layui/css/layui.css?v=20201111001?v=20201111001" />
 		<link rel="stylesheet" type="text/css" href="./css/theme.css?v=20201111001" /> -->
@@ -93,6 +104,7 @@ include("foot.php");
 			<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="search"><i class="layui-icon layui-icon-search"></i><span>搜索</span></button>
 			<button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="New"><i class="layui-icon layui-icon-add-1"></i><span>新增</span></button>
 			<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Del"><i class="layui-icon layui-icon-delete"></i><span>删除</span></button>
+			<button class="layui-btn layui-btn-sm layui-btn-warm" lay-event="Import"><i class="layui-icon"></i><span>导入</span></button>
 		</div>
 	</script>
 	<!-- 表格按钮 -->
@@ -257,6 +269,9 @@ include("foot.php");
 					case "Del":
 						Del(table, checkStatus);
 						break;
+						case "Import":
+							openImport();
+							break;
 						 //自定义头工具栏右侧图标 - 提示
 					 case 'exports':
        					//  layer.alert('这是工具栏右侧自定义的一个图标按钮');
@@ -573,6 +588,79 @@ include("foot.php");
 			// 	});
 			// }
 			select(); //获取数据
+
+			// 导入卡密功能（增强版：支持连接数与带宽，并优化样式）
+			function openImport() {
+				var elem = '\n<div class="imp-backdrop">\n  <div class="imp-card">\n    <div class="imp-header">导入卡密</div>\n    <div class="imp-body">\n      <div class="imp-row">\n        <div class="imp-col">\n          <label>所属应用</label>\n          <select id="imp_app" class="layui-input imp-select"></select>\n        </div>\n        <div class="imp-col">\n          <label>时长</label>\n          <input id="imp_times" class="layui-input" placeholder="+30 day" />\n        </div>\n      </div>\n      <div class="imp-row">\n        <div class="imp-col">\n          <label>连接数(空为无限制)</label>\n          <input id="imp_connection" class="layui-input" placeholder="例如 10" />\n        </div>\n        <div class="imp-col">\n          <label>上行带宽(MS)</label>\n          <input id="imp_bandwidthup" class="layui-input" placeholder="例如 10" />\n        </div>\n        <div class="imp-col">\n          <label>下行带宽(MS)</label>\n          <input id="imp_bandwidthdown" class="layui-input" placeholder="例如 10" />\n        </div>\n      </div>\n      <div class="imp-row">\n        <label>备注</label>\n        <input id="imp_comment" class="layui-input" placeholder="备注" />\n      </div>\n      <div class="imp-row file-row">\n        <label>选择文本文件(.txt)，每行一条卡密</label>\n        <input type="file" id="imp_file" accept=".txt" />\n      </div>\n      <div class="imp-row">\n        <label>或直接粘贴卡密(每行一条)</label>\n        <textarea id="imp_text" class="imp-textarea" placeholder="每行一条卡密，粘贴后回车"></textarea>\n      </div>\n    </div>\n  </div>\n</div>';
+
+				layer.open({
+					type: 1,
+					title: false,
+					area: ['680px','560px'],
+					content: elem,
+					btn: ['导入','取消'],
+					yes: function(index, layero){
+						var app = layero.find('#imp_app').val();
+						var times = layero.find('#imp_times').val();
+						var comment = layero.find('#imp_comment').val();
+						var file = layero.find('#imp_file')[0].files[0];
+						var text = layero.find('#imp_text').val();
+						var connection = layero.find('#imp_connection').val();
+						var bandwidthup = layero.find('#imp_bandwidthup').val();
+						var bandwidthdown = layero.find('#imp_bandwidthdown').val();
+
+						if(!app){ layer.msg('请选择所属应用',{icon:5}); return; }
+						if(!times){ layer.msg('请填写时长字段，例如 +30 day',{icon:5}); return; }
+						if(!file && !text){ layer.msg('请上传文件或粘贴卡密',{icon:5}); return; }
+
+						var formData = new FormData();
+						formData.append('app', app);
+						formData.append('times', times);
+						formData.append('comment', comment);
+						if(file){ formData.append('file', file); }
+						if(text){ formData.append('text', text); }
+						if(connection !== undefined) formData.append('connection', connection);
+						if(bandwidthup !== undefined) formData.append('bandwidthup', bandwidthup);
+						if(bandwidthdown !== undefined) formData.append('bandwidthdown', bandwidthdown);
+
+						$.ajax({
+							url: 'ajax.php?act=importkami',
+							type: 'POST',
+							data: formData,
+							contentType: false,
+							processData: false,
+							dataType: 'json',
+							beforeSend: function(){ layer.msg('导入中',{icon:16,shade:0.05,time:false}); },
+							success: function(res){
+								layer.msg(res.msg,{icon:1});
+								if(res.code==1){
+									reload('daili_kami');
+									layer.close(index);
+								}
+							},
+							error: function(err){ 
+								console.log(err);
+								var text = err.responseText || '';
+								try{ var j = JSON.parse(text); layer.msg(j.msg || '导入失败',{icon:5}); }
+								catch(e){ layer.msg(text ? text : '导入失败',{icon:5}); }
+							 }
+						});
+					},
+					success: function(layero, index){
+						// 填充应用选项并自动选择第一个非空项，默认 times
+						var sel = layero.find('#imp_app');
+						$('[name=app] option').clone().appendTo(sel);
+						var firstVal = '';
+						sel.find('option').each(function(){ if(firstVal=='' && $(this).val()!=''){ firstVal = $(this).val(); } });
+						if(firstVal!='') sel.val(firstVal);
+						layero.find('#imp_times').val('+30 day');
+
+						// 视觉效果：与 "新增卡密" 风格一致，移除遮罩毛玻璃，卡片使用白底并淡入
+						$('.layui-layer-shade').css({'background':'rgba(0,0,0,0.45)'});
+						layero.find('.imp-card').hide().fadeIn(220);
+					}
+				});
+			}
 			/* 
 			 <select name="classify" lay-verify="required" lay-filter="classify">
 			 	<option value=""></option>

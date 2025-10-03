@@ -398,4 +398,131 @@ body,
 }
 .custom-admin .layui-nav-tree .layui-nav-item a:hover .layui-nav-more:before {
 	color:#FFFFFF;
+
+/* === Dark-mode overrides for admin pages (appended) ===
+   Ensure admin layout matches site dark theme: override white sidebars, cards,
+   modals (layer / SweetAlert) and top messages. Loaded last in admin.css so
+   it can effectively override earlier rules. */
+
+html, body, .layui-layout-body {
+	background-color: #0f1720 !important;
+	color: #e6eef8 !important;
+}
+
+/* Side bar / admin background */
+.layui-layout-admin .layui-side.custom-admin,
+.layui-layout-admin .layui-side.custom-admin .layui-side-scroll {
+	background-color: rgba(8,12,18,0.72) !important;
+	border-right: 1px solid rgba(255,255,255,0.03) !important;
+	box-shadow: 0 8px 30px rgba(0,0,0,0.6) !important;
+	color: #cfe8ff !important;
+	backdrop-filter: blur(6px);
+}
+
+/* Header / tab bar */
+.custom-header,
+.custom-tab,
+.custom-tab .layui-this {
+	background: rgba(10,14,20,0.7) !important;
+	color: #e6eef8 !important;
+	border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+}
+
+/* Logo area */
+.custom-logo,
+.custom-logo h1,
+.custom-logo span {
+	background: transparent !important;
+	color: #e6eef8 !important;
+}
+
+/* Cards, tables, and content panes */
+.layui-body,
+.app-container,
+.layui-tab-title,
+.layui-tab-item,
+.layui-card,
+.layui-card-body,
+.layui-card-header,
+.custom-card {
+	background: rgba(10,14,20,0.64) !important;
+	color: #e6eef8 !important;
+	border-color: rgba(255,255,255,0.03) !important;
+	box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+}
+
+/* Layer (layui) modals and messages */
+.layui-layer,
+.layui-layer-content,
+.layui-layer-title,
+.layui-layer-msg {
+	background: rgba(10,14,20,0.9) !important;
+	color: #e6eef8 !important;
+	border: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+/* SweetAlert (if used in admin pages) */
+.sweet-alert,
+.swal-modal,
+.swal-modal .swal-footer,
+.swal-modal .swal-text {
+	background: rgba(10,14,20,0.95) !important;
+	color: #e6eef8 !important;
+	border: 1px solid rgba(255,255,255,0.05) !important;
+}
+.sweet-alert input,
+.swal-modal input,
+.swal-modal textarea {
+	background: rgba(255,255,255,0.03) !important;
+	color: #e6eef8 !important;
+}
+
+/* Qmsg / message box */
+.qmsg .qmsg-content,
+.qmsg .qmsg-item .qmsg-content {
+	background: rgba(12,16,22,0.9) !important;
+	color: #e6eef8 !important;
+	border: 1px solid rgba(255,255,255,0.04) !important;
+}
+
+/* Inputs and selects */
+.layui-input,
+.layui-textarea,
+input,
+textarea,
+select {
+	background: rgba(255,255,255,0.03) !important;
+	color: #e6eef8 !important;
+	border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Neutralize inline white backgrounds as a last resort */
+/* Avoid using a universal inline-style neutralizer (breaks icons/images).
+   Instead preserve specific white parts used by SweetAlert success icon and images. */
+.sweet-alert .sa-icon.sa-success .sa-fix,
+.sweet-alert .sa-icon.sa-success::before,
+.sweet-alert .sa-icon.sa-success::after {
+	/* white parts of the checkmark */
+	background: #ffffff !important;
+	z-index: 2 !important;
+}
+.sweet-alert .sa-icon.sa-success .sa-placeholder {
+	background: transparent !important;
+	border: 4px solid rgba(165,220,134,0.18) !important;
+	box-sizing: content-box !important;
+}
+.sweet-alert .sa-icon.sa-success {
+	position: relative !important;
+}
+.sweet-alert .sa-icon.sa-success .sa-line,
+.sweet-alert .sa-icon.sa-success .sa-line.sa-tip,
+.sweet-alert .sa-icon.sa-success .sa-line.sa-long {
+	background-color: #a5dc86 !important;
+}
+
+/* Ensure image elements and icons keep their own backgrounds unless explicitly styled */
+img, svg, .sa-icon * {
+	background: transparent !important;
+}
+
 }

@@ -16,3 +16,134 @@
 .layui-form-select .layui-edge {
     right: 11%;
 }
+
+/* === Dark-mode / high-contrast overrides (appended) ===
+   These rules intentionally use higher specificity and some !important
+   to override third-party CSS (bootstrap/app, layui, sweetalert, message).
+   They purposefully target the logo/main card, announcement areas, modals,
+   and notification widgets (Qmsg / layer / SweetAlert) to make text readable
+   and provide a frosted glass aesthetic.
+*/
+
+body {
+    background-color: #0f1720 !important;
+    color: #e6eef8 !important;
+}
+
+/* Logo / main card */
+.layui-logo,
+.main,
+.custom-card,
+.layui-card {
+    background-color: rgba(10,14,20,0.70) !important;
+    color: #e6eef8 !important;
+    border: 1px solid rgba(255,255,255,0.04) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6) !important;
+    backdrop-filter: blur(6px);
+}
+
+/* Qmsg (top notifications) */
+.qmsg .qmsg-content {
+    background: rgba(12,16,22,0.9) !important;
+    color: #e6eef8 !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.04) !important;
+}
+
+/* SweetAlert / swal modal */
+.sweet-alert,
+.swal-modal,
+.swal-modal .swal-footer,
+.swal-modal .swal-text {
+    background: rgba(10,14,20,0.92) !important;
+    color: #e6eef8 !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6) !important;
+    backdrop-filter: blur(6px);
+}
+.swal-content__input,
+.sweet-alert .swal-content__input,
+.swal-modal input,
+.swal-modal textarea {
+    background: rgba(255,255,255,0.04) !important;
+    color: #e6eef8 !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Layer (layui) modals and messages */
+.layui-layer,
+.layui-layer-content,
+.layui-layer-title,
+.layui-layer-msg {
+    background: rgba(10,14,20,0.88) !important;
+    color: #e6eef8 !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6) !important;
+}
+.layui-layer-title {
+    color: #cfe8ff !important;
+    background: rgba(10,14,20,0.9) !important;
+}
+
+/* Form fields / inputs */
+.layui-input,
+.layui-textarea,
+input,
+textarea,
+select,
+.swal-content__input {
+    background: rgba(255,255,255,0.03) !important;
+    color: #e6eef8 !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Tables / cards / modal content */
+.table,
+.layui-table,
+.layui-table th,
+.layui-table td,
+.card,
+.modal-content {
+    background: rgba(6,8,12,0.6) !important;
+    color: #e6eef8 !important;
+    border-color: rgba(255,255,255,0.03) !important;
+}
+
+/* Announcement area (common ids/classes used for notices) */
+.announcement,
+.gonggao,
+#announcement,
+.notice {
+    background: rgba(12,16,22,0.75) !important;
+    color: #e6eef8 !important;
+}
+
+/* Small UI color adjustments */
+.qmsg .qmsg-icon-close,
+.qmsg .qmsg-icon {
+    color: #cfe8ff !important;
+}
+
+/* Preserve SweetAlert success icon white parts (these pseudo-elements need white to render checkmark) */
+.sweet-alert .sa-icon.sa-success .sa-fix,
+.sweet-alert .sa-icon.sa-success::before,
+.sweet-alert .sa-icon.sa-success::after {
+    /* the white parts of the checkmark */
+    background: #ffffff !important;
+    z-index: 2 !important;
+}
+.sweet-alert .sa-icon.sa-success .sa-placeholder {
+    /* keep the circular placeholder transparent with a light green border */
+    background: transparent !important;
+    border: 4px solid rgba(165,220,134,0.18) !important;
+    box-sizing: content-box !important;
+}
+.sweet-alert .sa-icon.sa-success {
+    /* ensure proper stacking and alignment */
+    position: relative !important;
+}
+.sweet-alert .sa-icon.sa-success .sa-line,
+.sweet-alert .sa-icon.sa-success .sa-line.sa-tip,
+.sweet-alert .sa-icon.sa-success .sa-line.sa-long {
+    background-color: #a5dc86 !important; /* green lines */
+}
