@@ -89,8 +89,7 @@ if (!($islogin == 1)) {
 			<select onchange="selchange(this)" id="selip" style="display: inline-block;" name="serverip" lay-verify="required" lay-filter="serverip">
 			<option value="{{d.serverip}}">{{d.serverip}}(当前选择)</option>
 			<?php
-				$sql = 'select ip,comment,state from server_list where username=\'' . $subconf['username'] . '\' ';
-				$server_list = $DB->select($sql);
+				$server_list = $DB->selectV2('select ip,comment,state from server_list where username = ?', [$subconf['username']]);
 
 				foreach ($server_list as $key => $server) {
 					if ($server_list[$key]['state'] == 1) {

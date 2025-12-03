@@ -325,12 +325,12 @@ function userquery($column, $ccp)
 function WriteLog($operation, $msg, $operationer, $DB)
 {
     $arr = array(
-        'operation'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $operation)),
-        'msg' => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $msg)),
-        'operationer'     => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $operationer)),
-        'ip'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), x_real_ip()))
+        'operation'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $operation),
+        'msg' => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $msg),
+        'operationer'     => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $operationer),
+        'ip'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), x_real_ip())
     );
-    $exec = $DB->insert('log', $arr);
+    $exec = $DB->insertV2('log', $arr);
 }
 /**
  * @description: 
@@ -497,11 +497,14 @@ function ForServer($server, $user)
 function SerchearchAllServer($app, $user, $DB)
 {
    try {
-    $tj = (!empty($app)) ? "where appcode='$app'" : "";
-    $ip = $DB->select("select serverip from application " . $tj);
+    if (!empty($app)) {
+        $ip = $DB->selectV2("select serverip from application where appcode = ?", [$app]);
+    } else {
+        $ip = $DB->selectV2("select serverip from application", []);
+    }
     $serverarr = array();
     foreach ($ip as $valuel) {
-        $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $valuel['serverip'] . "'"); //$ip['serverip']服务器IP
+        $server = $DB->selectRowV2("select ip,serveruser,password,cport from server_list where ip = ?", [$valuel['serverip']]); //$ip['serverip']服务器IP
         Array_push($serverarr, $server);
     };
     yield from ForServer($serverarr, $user);
@@ -551,7 +554,7 @@ function IDelUser($username, $admin_password, $adminport, $proxyaddress)
 function DelUser($user, $serverip, $DB)
 {
 try {
-    $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $serverip . "'"); //$ip['serverip']服务器IP
+    $server = $DB->selectRowV2("select ip,serveruser,password,cport from server_list where ip = ?", [$serverip]); //$ip['serverip']服务器IP
     yield from IDelUser($user, $server['password'], $server['cport'], $server['ip']);
 } catch (Exception $th) {
    // throw $th;

@@ -24,8 +24,7 @@ function handleError($error, $act = '', $DB = null, $subconf = null)
 switch ($act) {
     case 'getserver':
         try {
-            $sql = 'select id,ip,comment from server_list where username=\'' . $subconf['username'] . '\' ';
-            $server_list = $DB->select($sql);
+            $server_list = $DB->selectV2('select id,ip,comment from server_list where username = ?', [$subconf['username']]);
             $code = [
                 "code" => "1",
                 "msg" => $server_list
@@ -37,15 +36,14 @@ switch ($act) {
         break;
     case 'getuseserver':
         try {
-            $sql = 'select id,ip,comment from server_list where state=1 and username=\'' . $subconf['username'] . '\' ';
-            $server_list = $DB->select($sql);
+            $server_list = $DB->selectV2('select id,ip,comment from server_list where state=1 and username = ?', [$subconf['username']]);
             $code = [
                 "code" => "1",
                 "msg" => $server_list
             ];
             exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         } catch (Exception $e) {
-            exit(json_encode(handleError($e, 'getserver', $DB, $subconf), JSON_UNESCAPED_UNICODE));
+            exit(json_encode(handleError($e, 'getuseserver', $DB, $subconf), JSON_UNESCAPED_UNICODE));
         }
         break;
     case 'newapp':
@@ -55,9 +53,7 @@ switch ($act) {
             }
             $server = $_POST['server'];
             $username = $_POST['username'];
-            $sql = 'select appname from application';
-            $dist_name = $DB->select($sql);
-            // print_r($dist_name);
+            $dist_name = $DB->selectV2('select appname from application', []);
             $flag = true;
             foreach ($dist_name as $key => $name) {
                 if ($username == $name['appname']) {
@@ -67,12 +63,12 @@ switch ($act) {
             if ($flag) {
                 $appcode = md5(uniqid(mt_rand(), 1) . time());
                 $arr = array(
-                    'appname'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $username)),
-                    'appcode' => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $appcode)),
-                    'serverip'     => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $server)),
-                    'username' => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $subconf['username'])),
+                    'appname'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $username),
+                    'appcode' => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $appcode),
+                    'serverip'     => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $server),
+                    'username' => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $subconf['username']),
                 );
-                $exec = $DB->insert('application', $arr);
+                $exec = $DB->insertV2('application', $arr);
                 if ($exec) {
                     $code = [
                         "code" => "1",
@@ -107,20 +103,27 @@ switch ($act) {
         break;
 
     case "apptable":
-        $sqlj = "";
         if (isset($_REQUEST['page']) && isset($_REQUEST['limit']) && isset($_REQUEST['server']) && isset($_REQUEST['appname'])) {
-            //服务器sql
-            $sqlj .= $_REQUEST['server'] != "" && $_REQUEST['server'] != "*" ? "and serverip=\"" . $_REQUEST['server'] . "\"" : "";
-            //应用名字搜索
-            $sqlj .= $_REQUEST['appname'] != "" ? " and appname LIKE '%" . $_REQUEST["appname"] . "%'" : "";
-            //  $sqlj .= $_REQUEST['appname'] != "" ? " and appname=\"" . $_REQUEST['appname'] . "\"" : "";
-            $sql = 'SELECT appid,appcode,appname,serverip,found_time FROM application where username=\'' . $subconf['username'] . '\' ' . $sqlj . ' ';
+            // 构建参数化查询
+            $params = [$subconf['username']];
+            $sql = 'SELECT appid,appcode,appname,serverip,found_time FROM application where username = ?';
+            
+            // 服务器sql
+            if ($_REQUEST['server'] != "" && $_REQUEST['server'] != "*") {
+                $sql .= " and serverip = ?";
+                $params[] = $_REQUEST['server'];
+            }
+            // 应用名字搜索
+            if ($_REQUEST['appname'] != "") {
+                $sql .= " and appname LIKE ?";
+                $params[] = '%' . $_REQUEST["appname"] . '%';
+            }
 
-            // // $DB->pageNo=$_REQUEST['page'];当前页码
-            // //$DB->pageRows=$_REQUEST['limit'];多少行数
-            $countpage = $DB->selectRow("select count(*) as num from application where username=\"" . $subconf['username'] . "\"");
+            $countpage = $DB->selectRowV2("select count(*) as num from application where username = ?", [$subconf['username']]);
 
-            $app = $DB->selectPage($sql, $DB->pageNo = $_REQUEST['page'], $DB->pageRows = $_REQUEST['limit']);
+            $DB->pageNo = $_REQUEST['page'];
+            $DB->pageRows = $_REQUEST['limit'];
+            $app = $DB->selectPageV2($sql, $params);
 
             foreach ($app as $key => $apps) {
                 $app[$key]['appid'] = $key + 1;
@@ -135,30 +138,9 @@ switch ($act) {
         break;
     case "delapp":
         if (isset($_POST['appcode'])) {
-            // $getServer=$DB->select("SELECT id,applist FROM server_list");
+            $exesql = $DB->deleteV2("application", "appcode = ?", [$_REQUEST['appcode']]);
 
-            // foreach($getServer as $item)
-            // {
-            //     $strArr=explode(",",$item["applist"]);
-            //     $applist="";
-            //     foreach($strArr as $app)
-            //     {
-            //         if($app==$_POST['appcode'])
-            //         {
-            //             continue;
-            //         }
-            //         if(!empty($app))
-            //         {
-            //             $applist.=$app;
-            //         }
-            //     }
-            //     $updateServer=$DB->exe("UPDATE server_list SET applist='".$applist."' where id=".$item["id"]."");
-            //     var_dump("UPDATE server_list SET applist='".$applist."' where id=".$item["id"]."");
-            // }
-
-            $exesql = $DB->delete("application", "appcode=\"" . $_REQUEST['appcode'] . "\"");
-
-            if ($exesql) {
+            if ($exesql !== false) {
                 $code = [
                     "code" => "1",
                     "msg" => "删除成功"
@@ -183,15 +165,15 @@ switch ($act) {
                 "code" => "-1",
                 "msg" => "删除失败"
             ];
-            WriteLog("删除失败", "删除失败参数为空" . $_POST['item'], $subconf['username'], $DB);
+            WriteLog("删除失败", "删除失败参数为空", $subconf['username'], $DB);
             exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         }
         $arr = $_POST['item'];
         $execs = 0;
         $execf = 0;
         for ($i = 0; $i < count($arr); $i++) {
-            $exesql = $DB->delete("application", "appcode=\"" . $arr[$i] . "\"");
-            if ($exesql) {
+            $exesql = $DB->deleteV2("application", "appcode = ?", [$arr[$i]]);
+            if ($exesql !== false) {
                 $execs++;
             } else {
                 $execf++;
@@ -202,14 +184,14 @@ switch ($act) {
                 "code" => "1",
                 "msg" => "删除成功"
             ];
-            WriteLog("删除", "删除了" . $_POST['item'], $subconf['username'], $DB);
+            WriteLog("删除", "删除了应用", $subconf['username'], $DB);
             exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         } else {
             $code = [
                 "code" => "1",
                 "msg" => "删除成功：" . $execs . "删除失败：" . $execf,
             ];
-            WriteLog("删除", "删除了" . $_POST['item'], $subconf['username'], $DB);
+            WriteLog("删除", "删除了应用", $subconf['username'], $DB);
             exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         }
         break;
@@ -218,8 +200,8 @@ switch ($act) {
         $execs = 0;
         $execf = 0;
         for ($i = 0; $i < count($arr); $i++) {
-            $exesql = $DB->delete("server_list", "ip=\"" . $arr[$i] . "\"");
-            if ($exesql) {
+            $exesql = $DB->deleteV2("server_list", "ip = ?", [$arr[$i]]);
+            if ($exesql !== false) {
                 $execs++;
             } else {
                 $execf++;
@@ -230,35 +212,33 @@ switch ($act) {
                 "code" => "1",
                 "msg" => "删除成功"
             ];
-            WriteLog("删除", "删除了" . $_POST['item'], $subconf['username'], $DB);
+            WriteLog("删除", "删除了服务器", $subconf['username'], $DB);
             exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         } else {
             $code = [
                 "code" => "1",
                 "msg" => "删除成功：" . $execs . "删除失败：" . $execf,
             ];
-            WriteLog("删除", "删除了" . $_POST['item'], $subconf['username'], $DB);
+            WriteLog("删除", "删除了服务器", $subconf['username'], $DB);
             exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         }
         break;
     case "update":
-        // .addslashes($_REQUEST['serverip'])." WHERE appcode=".$_REQUEST['appcode'].
         if (isset($_REQUEST['appcode']) && isset($_REQUEST['appname']) && isset($_REQUEST['serverip'])) {
-            $sql = "UPDATE application SET appname=\"" . addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $_REQUEST['appname'])) . "\",serverip=\"" . addslashes($_REQUEST['serverip']) . "\" WHERE appcode=\"" . $_REQUEST['appcode'] . "\" ";
-            $result = $DB->exec($sql);
+            $appname = str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $_REQUEST['appname']);
+            $values = [
+                'appname' => $appname,
+                'serverip' => $_REQUEST['serverip']
+            ];
+            $result = $DB->updateV2('application', $values, 'appcode = ?', [$_REQUEST['appcode']]);
 
-            $cxserver = $DB->selectRow("SELECT applist FROM server_list WHERE ip='" . addslashes($_REQUEST['serverip']) . "'");
+            $cxserver = $DB->selectRowV2("SELECT applist FROM server_list WHERE ip = ?", [$_REQUEST['serverip']]);
 
-
-            if ($result) {
+            if ($result !== false) {
                 $code = [
                     "code" => "1",
                     "msg" => "更新成功！"
                 ];
-
-                // $sqlserver="UPDATE server_list set applist='".((empty($cxserver['applist'])?"":$cxserver['applist'].",").$_REQUEST['appcode'])."' where ip='".addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $_REQUEST['serverip']))."' ";
-
-                // $result = $DB->exe($sqlserver);
 
                 WriteLog("更新", "更新了" . $_REQUEST['appname'], $subconf['username'], $DB);
                 exit(json_encode($code, JSON_UNESCAPED_UNICODE));
@@ -275,21 +255,28 @@ switch ($act) {
         }
         break;
     case "servertable":
-        // print_r($_REQUEST);
-        $sqlj = "";
         if (isset($_REQUEST['page']) && isset($_REQUEST['limit']) && isset($_REQUEST['ip']) && isset($_REQUEST['comment'])) {
-            //服务器IP
-            $sqlj .= $_REQUEST['ip'] != "" ? "and ip=\"" . $_REQUEST['ip'] . "\"" : "";
-            $sqlj .= $_REQUEST['comment'] != "" ? " and comment LIKE '%" . $_REQUEST["comment"] . "%'" : "";
-            // $sqlj .= $_REQUEST['comment'] != "" ? " and comment=\"" . $_REQUEST['comment'] . "\"" : "";
-            $sql = 'SELECT id,ip,serveruser,password,cport,state,comment FROM server_list where username=\'' . $subconf['username'] . '\' ' . $sqlj . ' ';
-            // // $DB->pageNo=$_REQUEST['page'];当前页码
-            // //$DB->pageRows=$_REQUEST['limit'];多少行数
-            $countpage = $DB->selectRow("select count(*) as num from server_list where username=\"" . $subconf['username'] . "\"");
-            $app = $DB->selectPage($sql, $DB->pageNo = $_REQUEST['page'], $DB->pageRows = $_REQUEST['limit']);
-            // foreach ($app as $key => $apps) {
-            //     $app[$key]['id'] = $key + 1;
-            // }
+            // 构建参数化查询
+            $params = [$subconf['username']];
+            $sql = 'SELECT id,ip,serveruser,password,cport,state,comment FROM server_list where username = ?';
+            
+            // 服务器IP
+            if ($_REQUEST['ip'] != "") {
+                $sql .= " and ip = ?";
+                $params[] = $_REQUEST['ip'];
+            }
+            // 备注搜索
+            if ($_REQUEST['comment'] != "") {
+                $sql .= " and comment LIKE ?";
+                $params[] = '%' . $_REQUEST["comment"] . '%';
+            }
+
+            $countpage = $DB->selectRowV2("select count(*) as num from server_list where username = ?", [$subconf['username']]);
+            
+            $DB->pageNo = $_REQUEST['page'];
+            $DB->pageRows = $_REQUEST['limit'];
+            $app = $DB->selectPageV2($sql, $params);
+
             $json = ["code" => "0", "count" => $countpage['num'], "data" => $app, "icon" => 1];
             exit(json_encode($json, JSON_UNESCAPED_UNICODE));
         } else {
@@ -306,9 +293,7 @@ switch ($act) {
         $state = $_POST['state'] == null ? "0" : "1";
         $comment = $_POST['comment'];
 
-        $sql = 'select ip from server_list';
-        $dist_ip = $DB->select($sql);
-        // print_r($dist_ip);
+        $dist_ip = $DB->selectV2('select ip from server_list', []);
         $flag = true;
         foreach ($dist_ip as $key => $name) {
             if ($serverip == $name['ip']) {
@@ -336,16 +321,15 @@ switch ($act) {
                 exit(json_encode($json, JSON_UNESCAPED_UNICODE));
             }
             $arr = array(
-                'ip'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $serverip)),
-                'serveruser'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $ccpusername)),
-                'password'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $ccppassword)),
-                'cport'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $ccpport)),
-                'state'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $state)),
-                'comment'  => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $comment)),
-                'username' => addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $subconf['username']))
+                'ip'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $serverip),
+                'serveruser'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $ccpusername),
+                'password'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $ccppassword),
+                'cport'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $ccpport),
+                'state'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $state),
+                'comment'  => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $comment),
+                'username' => str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $subconf['username'])
             );
-            //print_r($arr);
-            $exec = $DB->insert('server_list', $arr);
+            $exec = $DB->insertV2('server_list', $arr);
             if ($exec) {
                 $code = [
                     "code" => "1",
@@ -369,9 +353,9 @@ switch ($act) {
         break;
     case "upswitch":
         if (isset($_POST['ip']) && isset($_POST["state"])) {
-            $sql = "UPDATE server_list SET state=\"" . addslashes($_POST["state"]) . "\" WHERE ip=\"" . addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $_POST['ip'])) . "\" ";
-            $result = $DB->exec($sql);
-            if ($result) {
+            $ip = str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $_POST['ip']);
+            $result = $DB->updateV2('server_list', ['state' => $_POST["state"]], 'ip = ?', [$ip]);
+            if ($result !== false) {
                 $code = [
                     "code" => "1",
                     "msg" => "更新成功"
@@ -393,22 +377,47 @@ switch ($act) {
         }
         break;
     case "getkami":
-        $sqlj = "";
         if (isset($_REQUEST['page']) && isset($_REQUEST['limit']) && isset($_REQUEST['code']) && isset($_REQUEST['found_date']) && isset($_REQUEST['use_date']) && isset($_REQUEST['sc_user']) && isset($_REQUEST['state']) && isset($_REQUEST['comment']) && isset($_REQUEST['app'])) {
-            $sqlj .= $_REQUEST['code'] != "" ? "and kami=\"" . $_REQUEST['code'] . "\"" : "";
-            $sqlj .= $_REQUEST['found_date'] != "" ? " and found_date=\"" . $_REQUEST['found_date'] . "\"" : "";
-            $sqlj .= $_REQUEST['use_date'] != "" ? " and use_date=\"" . $_REQUEST['use_date'] . "\"" : "";
-            $sqlj .= $_REQUEST['sc_user'] != "" ? " and sc_user=\"" . $_REQUEST['sc_user'] . "\"" : "";
-            $sqlj .= $_REQUEST['state'] != "" ? " and state=\"" . $_REQUEST['state'] . "\"" : "";
-            $sqlj .= $_REQUEST['comment'] != "" ? " and comment=\"" . $_REQUEST['comment'] . "\"" : "";
-            $sqlj .= $_REQUEST['app'] != "" ? " and app=\"" . $_REQUEST['app'] . "\"" : "";
-            $sqlj .= " order by found_date desc";
-            $sql = 'SELECT * FROM kami where host=\'' . $subconf['siteurl'] . '\' ' . $sqlj . ' ';
-            //  print($sql);
-            // // $DB->pageNo=$_REQUEST['page'];当前页码
-            // //$DB->pageRows=$_REQUEST['limit'];多少行数
-            $countpage = $DB->selectRow("select count(*) as num from kami where sc_user=\"" . $subconf['username'] . "\"");
-            $app = $DB->selectPage($sql, $DB->pageNo = $_REQUEST['page'], $DB->pageRows = $_REQUEST['limit']);
+            // 构建参数化查询
+            $params = [$subconf['siteurl']];
+            $sql = 'SELECT * FROM kami where host = ?';
+            
+            if ($_REQUEST['code'] != "") {
+                $sql .= " and kami = ?";
+                $params[] = $_REQUEST['code'];
+            }
+            if ($_REQUEST['found_date'] != "") {
+                $sql .= " and found_date = ?";
+                $params[] = $_REQUEST['found_date'];
+            }
+            if ($_REQUEST['use_date'] != "") {
+                $sql .= " and use_date = ?";
+                $params[] = $_REQUEST['use_date'];
+            }
+            if ($_REQUEST['sc_user'] != "") {
+                $sql .= " and sc_user = ?";
+                $params[] = $_REQUEST['sc_user'];
+            }
+            if ($_REQUEST['state'] != "") {
+                $sql .= " and state = ?";
+                $params[] = $_REQUEST['state'];
+            }
+            if ($_REQUEST['comment'] != "") {
+                $sql .= " and comment = ?";
+                $params[] = $_REQUEST['comment'];
+            }
+            if ($_REQUEST['app'] != "") {
+                $sql .= " and app = ?";
+                $params[] = $_REQUEST['app'];
+            }
+            $sql .= " order by found_date desc";
+
+            $countpage = $DB->selectRowV2("select count(*) as num from kami where sc_user = ?", [$subconf['username']]);
+            
+            $DB->pageNo = $_REQUEST['page'];
+            $DB->pageRows = $_REQUEST['limit'];
+            $app = $DB->selectPageV2($sql, $params);
+            
             foreach ($app as $key => $apps) {
                 $app[$key]['id'] = $key + 1;
                 if ($app[$key]['state'] == 1) {
@@ -512,7 +521,6 @@ switch ($act) {
                 $arr = array(
                     'kami'  => $kami[$key]["kami"],
                     'times'  => $kamidurdangwei,
-                    //'times'  => $_POST["duration"] == -1 ? ($_POST["kamidur"]<1?round($_POST["kamidur"],1):$_POST["kamidur"]) : $_POST["duration"],
                     'host'  => $subconf['siteurl'],
                     'sc_user'  => $subconf['username'],
                     'state'  => 0,
@@ -520,8 +528,7 @@ switch ($act) {
                     'comment'  => $_POST["comment"],
                     'ext' => json_encode($ext)
                 );
-                //print_r($arr);
-                $exec = $DB->insert('kami', $arr);
+                $exec = $DB->insertV2('kami', $arr);
                 if (!$exec) {
                     $flag = false;
                 }
@@ -557,8 +564,7 @@ switch ($act) {
         }
         break;
     case "getapp":
-        $sql = 'SELECT appcode,appname FROM application where username=\'' . $subconf['username'] . '\' ';
-        $query = $DB->select($sql);
+        $query = $DB->selectV2('SELECT appcode,appname FROM application where username = ?', [$subconf['username']]);
         $code = [
             "code" => "1",
             "msg" => $query
@@ -577,8 +583,8 @@ switch ($act) {
         $execs = 0;
         $execf = 0;
         for ($i = 0; $i < count($arr); $i++) {
-            $exesql = $DB->delete("kami", "kami=\"" . $arr[$i] . "\"");
-            if ($exesql) {
+            $exesql = $DB->deleteV2("kami", "kami = ?", [$arr[$i]]);
+            if ($exesql !== false) {
                 $execs++;
             } else {
                 $execf++;
@@ -589,14 +595,14 @@ switch ($act) {
                 "code" => "1",
                 "msg" => "删除成功"
             ];
-            WriteLog("删除卡密", "卡密" . $arr, $subconf['username'], $DB);
+            WriteLog("删除卡密", "删除了卡密", $subconf['username'], $DB);
             exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         } else {
             $code = [
                 "code" => "1",
                 "msg" => "删除成功：" . $execs . "删除失败：" . $execf,
             ];
-            WriteLog("删除卡密", "卡密" . $arr, $subconf['username'], $DB);
+            WriteLog("删除卡密", "删除了卡密", $subconf['username'], $DB);
             exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         }
         break;
@@ -616,15 +622,14 @@ switch ($act) {
                     ];
                 } else {
                     if ($subconf['password'] == $_POST['out_password']) {
-                        $sql = "UPDATE sub_admin SET password=\"" . addslashes($_POST["confirm_password"]) . "\" WHERE username=\"" . addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $subconf['username'])) . "\" ";
-                        //print($sql);
-                        $result = $DB->exec($sql);
-                        if ($result) {
+                        $username = str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $subconf['username']);
+                        $result = $DB->updateV2('sub_admin', ['password' => $_POST["confirm_password"]], 'username = ?', [$username]);
+                        if ($result !== false) {
                             $code = [
                                 "code" => "1",
                                 "msg" => "更新成功"
                             ];
-                            WriteLog("修改密码", "密码" . $subconf['password'], $subconf['username'], $DB);
+                            WriteLog("修改密码", "密码已修改", $subconf['username'], $DB);
                         } else {
                             $code = [
                                 "code" => "0",
@@ -648,25 +653,30 @@ switch ($act) {
         exit(json_encode($code, JSON_UNESCAPED_UNICODE));
         break;
     case "updateset":
-        $result = ['user_key', 'kf', 'pan', 'ggswitch', 'wzgg', 'logo'];
+        $requiredFields = ['user_key', 'kf', 'pan', 'ggswitch', 'wzgg', 'logo'];
         $gg = 1;
         if (!isset($_POST['ggswitch'])) {
-            array_splice($result, 3, 1); //删除数组的ggswictch
+            array_splice($requiredFields, 3, 1); //删除数组的ggswictch
             $gg = 0;
         }
         $flag = true;
-        foreach ($result as $post) {
+        foreach ($requiredFields as $post) {
             $flag = isset($_POST[$post == "wzgg" ? "user_key" : $post]);
         }
         if ($flag) {
-            // $gg==true?"ggswitch='".$gg."'":"ggswitch='".$gg."'";
-            $sql = "UPDATE sub_admin SET hostname=\"" . addslashes($_POST["user_key"]) . "\", kf=\"" . addslashes($_POST["kf"]) . "\", pan=\"" . addslashes($_POST["pan"]) . "\", img=\"" . addslashes($_POST["logo"]) . "\"  ";
-            $sql .= ",ggswitch='" . $gg . "'";
-            $sql .= $gg == 0 ? "" : ",wzgg='" . trim(addslashes(str_replace(array("'"), array('"'), $_POST["wzgg"]))) . "'";
-            $sql .= " WHERE username=\"" . addslashes(str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $subconf['username'])) . "\" ";
-            // print($sql);
-            $result = $DB->exec($sql);
-            if ($result) {
+            $values = [
+                'hostname' => $_POST["user_key"],
+                'kf' => $_POST["kf"],
+                'pan' => $_POST["pan"],
+                'img' => $_POST["logo"],
+                'ggswitch' => $gg
+            ];
+            if ($gg != 0) {
+                $values['wzgg'] = trim(str_replace(array("'"), array('"'), $_POST["wzgg"]));
+            }
+            $username = str_replace(array("<", ">", "/"), array("&lt;", "&gt;", ""), $subconf['username']);
+            $result = $DB->updateV2('sub_admin', $values, 'username = ?', [$username]);
+            if ($result !== false) {
                 $code = [
                     "code" => "1",
                     "msg" => "保存成功"
@@ -747,7 +757,7 @@ switch ($act) {
                     $user_updata = array();
                     foreach ($result as $key => $value) {
                         try {
-                            $appname = $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'");
+                            $appname = $DB->selectRowV2("SELECT appname FROM application WHERE serverip = ?", [$value["serverip"]]);
                             $getdata = array(
                                 "id" => $value['id'],
                                 "user" => $value['user'],
@@ -814,7 +824,7 @@ switch ($act) {
                     $user_updata = array();
                     foreach ($result as $key => $value) {
                         try {
-                            $appname = $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'");
+                            $appname = $DB->selectRowV2("SELECT appname FROM application WHERE serverip = ?", [$value["serverip"]]);
                             $getdata = array(
                                 "id" => $value['id'],
                                 "user" => $value['user'],
@@ -870,7 +880,7 @@ switch ($act) {
                 $user_updata = array();
                 foreach ($result as $key => $value) {
                     try {
-                        $appname = $DB->selectRow("SELECT appname FROM application WHERE serverip='" . $value["serverip"] . "'");
+                        $appname = $DB->selectRowV2("SELECT appname FROM application WHERE serverip = ?", [$value["serverip"]]);
                         $getdata = array(
                             "id" => $value['id'],
                             "user" => $value['user'],
@@ -922,7 +932,7 @@ switch ($act) {
                 $usermodel["connection"] = -1;
             }
 
-            $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $usermodel['serverip'] . "'"); //$ip['serverip']服务器IP
+            $server = $DB->selectRowV2("select ip,serveruser,password,cport from server_list where ip = ?", [$usermodel['serverip']]); //$ip['serverip']服务器IP
             //print($server["password"]."".$server["cport"]."".$server["ip"]."".$usermodel["user"]."".$usermodel["pwd"]."".$usermodel["day"]);
             $result = UserUpdate($server["password"], $server["cport"], $server["ip"], $usermodel["olduser"], $usermodel["pwd"], $usermodel["day"], $usermodel["connection"], $usermodel["bandwidthup"] <= 0 ? -1 : $usermodel["bandwidthup"] * 1024, $usermodel["bandwidthdown"] <= 0 ? -1 : $usermodel["bandwidthdown"] * 1024, "0", $usermodel["newuser"]);
             WriteLog("用户编辑", "编辑了" . $usermodel, $subconf['username'], $DB);
@@ -937,12 +947,25 @@ switch ($act) {
         break;
     case "getlog":
         if (isset($_REQUEST['page']) && isset($_REQUEST['limit'])) {
-            // // $DB->pageNo=$_REQUEST['page'];当前页码
-            // //$DB->pageRows=$_REQUEST['limit'];多少行数
-            $sqlpage = isset($_REQUEST['logtime']) != "" ? " and operationdate LIKE '%" . $_REQUEST['logtime'] . "%' " : "1";
-            $sql = "SELECT * FROM `log` WHERE operationer=\"" . $subconf['username'] . "\"" . $sqlpage;
-            $countpage = $DB->selectRow("select count(*) as num from log where operationer=\"" . $subconf['username'] . "\"" . $sqlpage . "");
-            $app = $DB->selectPage($sql, $DB->pageNo = $_REQUEST['page'], $DB->pageRows = $_REQUEST['limit']);
+            // 构建参数化查询
+            $params = [$subconf['username']];
+            $countParams = [$subconf['username']];
+            $sql = "SELECT * FROM `log` WHERE operationer = ?";
+            $countSql = "select count(*) as num from log where operationer = ?";
+            
+            if (isset($_REQUEST['logtime']) && $_REQUEST['logtime'] != "") {
+                $sql .= " and operationdate LIKE ?";
+                $countSql .= " and operationdate LIKE ?";
+                $params[] = '%' . $_REQUEST['logtime'] . '%';
+                $countParams[] = '%' . $_REQUEST['logtime'] . '%';
+            }
+            
+            $countpage = $DB->selectRowV2($countSql, $countParams);
+            
+            $DB->pageNo = $_REQUEST['page'];
+            $DB->pageRows = $_REQUEST['limit'];
+            $app = $DB->selectPageV2($sql, $params);
+            
             $json = ["code" => "0", "count" => $countpage['num'], "data" => $app, "icon" => 1];
             exit(json_encode($json, JSON_UNESCAPED_UNICODE));
         } else {
@@ -990,8 +1013,9 @@ switch ($act) {
         $user_data = $_POST["userdata"];
         if (isset($user_data) && is_array($user_data)) {
             $app = $user_data["app"];
-            $ip = $DB->select("select serverip from application where appcode='$app'")[0];
-            $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $ip['serverip'] . "'"); //$ip['serverip']服务器IP
+            $ipResult = $DB->selectV2("select serverip from application where appcode = ?", [$app]);
+            $ip = $ipResult[0] ?? null;
+            $server = $DB->selectRowV2("select ip,serveruser,password,cport from server_list where ip = ?", [$ip['serverip']]); //$ip['serverip']服务器IP
             $code = AddUser($server["ip"], $server["password"], $server["cport"], $user_data);
         } else {
             $code = [
@@ -1005,7 +1029,7 @@ switch ($act) {
     case 'upswitchuser':
         $usermodel = $_POST["usermodel"];
         if (isset($usermodel) && is_array($usermodel)) {
-            $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $usermodel['serverip'] . "'"); //$ip['serverip']服务器IP
+            $server = $DB->selectRowV2("select ip,serveruser,password,cport from server_list where ip = ?", [$usermodel['serverip']]); //$ip['serverip']服务器IP
             $code = UserUpdate($server["password"], $server["cport"], $server["ip"], $usermodel["user"], $usermodel["pwd"], $usermodel["day"], $usermodel["connection"], $usermodel["bandwidthup"], $usermodel["bandwidthdown"], $usermodel["sw"]);
             WriteLog("切换用户", "切换了" . $usermodel, $subconf['username'], $DB);
             // 使用缓存
@@ -1027,12 +1051,12 @@ switch ($act) {
             array_push($user_data, $ser->current());
             $ser->next();
         }
-        $serverlist = $DB->selectRow("select COUNT(*) as count from server_list");
+        $serverlist = $DB->selectRowV2("select COUNT(*) as count from server_list", []);
 
-        $lognum = $DB->selectRow("select COUNT(*) as count from log");
-        $todaykami = $DB->selectRow("select COUNT(*) as count from kami where use_date>DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00') and use_date<DATE_ADD(DATE_ADD(DATE_ADD(DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00'),INTERVAL 23 HOUR),INTERVAL 59 MINUTE),INTERVAL 59 SECOND) and state='1'");
-        $kaminum = $DB->selectRow("select COUNT(*) as count from kami");
-        $appnum = $DB->selectRow("select COUNT(*) as count from application");
+        $lognum = $DB->selectRowV2("select COUNT(*) as count from log", []);
+        $todaykami = $DB->selectRowV2("select COUNT(*) as count from kami where use_date>DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00') and use_date<DATE_ADD(DATE_ADD(DATE_ADD(DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00'),INTERVAL 23 HOUR),INTERVAL 59 MINUTE),INTERVAL 59 SECOND) and state='1'", []);
+        $kaminum = $DB->selectRowV2("select COUNT(*) as count from kami", []);
+        $appnum = $DB->selectRowV2("select COUNT(*) as count from application", []);
         $json = [
             "code" => "1",
             "msg" => "获取成功!",
@@ -1075,9 +1099,17 @@ switch ($act) {
             }
 
             $state = isset($data["state"]) ? "1" : "0";
-            $sql = "UPDATE server_list SET ip='" . $data["serverip"] . "',serveruser='" . $data["user"] . "',password='" . $data["pwd"] . "',state='$state',comment='" . $data["comment"] . "',cport='" . $data["cport"] . "' WHERE id='" . $data["id"] . "'";
+            $values = [
+                'ip' => $data["serverip"],
+                'serveruser' => $data["user"],
+                'password' => $data["pwd"],
+                'state' => $state,
+                'comment' => $data["comment"],
+                'cport' => $data["cport"]
+            ];
+            $result = $DB->updateV2('server_list', $values, 'id = ?', [$data["id"]]);
 
-            if ($DB->exec($sql) > 0) {
+            if ($result !== false && $result > 0) {
                 $json = [
                     "code" => "1",
                     "msg" => "编辑成功",

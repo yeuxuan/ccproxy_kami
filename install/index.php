@@ -420,7 +420,7 @@ function deldir()
                         <div class="card">
                             <?php if ($type == "installok") {
 
-                                deldir();
+                                // deldir();
 
                             ?>
                                 <div class="card-body">

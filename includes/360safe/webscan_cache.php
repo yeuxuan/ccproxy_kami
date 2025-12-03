@@ -138,29 +138,37 @@ $modern_attack_patterns = array(
         'passthru\s*\(.+\)',  
         'proc_open\s*\(.+\)',  
         'popen\s*\(.+\)',  
-        '\`.*?\`',  // 反引号命令执行  
-        '\$\((.*?)\)', // $(command)格式  
-        '2>&1', // I/O重定向  
-        ';.*?(ls|cat|whoami|id|ps|netstat|pwd)',  
-        '[;&]{1}\s*(ls|cat|whoami|id|ps|netstat)',  
-        '\\x[a-fA-F0-9]{2,}', // 十六进制命令变种  
-        '\|\s*python',  
-        '\|\s*perl',  
-        '\|\s*php',  
+        '\`[^`]+\`',  // 反引号命令执行（要求至少一个字符）
+        '\$\([^)]+\)', // $(command)格式（要求至少一个字符）
+        '\s+2>&1\s*', // I/O重定向（要求前后有空白或位于末尾）
+        ';\s*(ls|cat|whoami|id|ps|netstat|pwd)\b',  // 分号后直接跟命令（更精确）
+        '(?:^|[;&|])\s*(ls|cat|whoami|id|ps|netstat)\s', // 命令开头或管道/分号后跟命令
+        '(?:\\\\x[a-fA-F0-9]{2}){3,}', // 十六进制命令变种：至少3组\xNN（如\x73\x79\x73）
+        '\|\s*python\b',  
+        '\|\s*perl\b',  
+        '\|\s*php\b',  
     ),  
+    // 'ssrf' 规则已禁用 - 用户可能合法输入内网地址（如配置服务器地址）
+    // SSRF 防护应在实际发起 HTTP 请求的代码中检查目标地址
+    // 如需启用，请取消下方注释
+    /*
     'ssrf' => array(  
-        // SSRF攻击模式  
-        'localhost',  
-        '127\.0\.0\.1',  
-        '0\.0\.0\.0',  
-        '::1',  
-        'internal',  
-        '169\.254\.\d+\.\d+', // AWS元数据API  
-        '192\.168\.',  
-        '10\.',  
-        '172\.(1[6-9]|2[0-9]|3[0-1])\.',  
-        '0x[a-f0-9]+', // 十六进制绕过  
-    ),  
+        // SSRF攻击模式 - 需要在 URL 上下文中匹配，避免误报
+        // 匹配 URL 协议后的内网地址（如 http://localhost, file://127.0.0.1）
+        '(?:https?|ftp|file|gopher|dict)://localhost(?:[:/]|$)',  
+        '(?:https?|ftp|file|gopher|dict)://127\.0\.0\.1(?:[:/]|$)',  
+        '(?:https?|ftp|file|gopher|dict)://0\.0\.0\.0(?:[:/]|$)',  
+        '(?:https?|ftp|file|gopher|dict)://\[?::1\]?(?:[:/]|$)',  
+        // AWS/云服务元数据端点
+        '(?:https?|ftp|file)://169\.254\.\d{1,3}\.\d{1,3}(?:[:/]|$)',  
+        // 内网 IP 段（完整 IP 格式，在 URL 上下文中）
+        '(?:https?|ftp|file)://192\.168\.\d{1,3}\.\d{1,3}(?:[:/]|$)',  
+        '(?:https?|ftp|file)://10\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:[:/]|$)',  
+        '(?:https?|ftp|file)://172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}(?:[:/]|$)',  
+        // @ 符号绕过检测（如 http://evil.com@127.0.0.1）
+        '@(?:localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(?:[:/]|$)',
+    ),
+    */  
     'serialization' => array(  
         // 反序列化攻击模式  
         'O:[0-9]+:"', // PHP序列化格式  
@@ -171,6 +179,10 @@ $modern_attack_patterns = array(
         'unserialize\s*\(',  
         'yaml_parse\s*\(',  
     ),  
+    // 'upload' 规则已禁用 - 在 GET/POST 参数中检测文件扩展名误报率高
+    // 文件上传安全应在实际上传处理代码中检查（验证扩展名、MIME、文件内容）
+    // 如需启用，请取消下方注释
+    /*
     'upload' => array(  
         // 文件上传攻击模式  
         '\.php\d?$',  
@@ -182,6 +194,7 @@ $modern_attack_patterns = array(
         'text/php',  
         'application/php',  
     )  
+    */
 ); 
 
 // 请求频率限制
@@ -192,17 +205,13 @@ $rate_limit = array(
     'block_time' => 600 // 阻止时间（秒）
 );
 
-// 响应头安全配置
+// 响应头安全配置（已放宽限制）
 $security_headers = array(
-    'X-Frame-Options' => 'SAMEORIGIN', // 防止点击劫持
+    // 'X-Frame-Options' => 'SAMEORIGIN', // 已禁用，允许 iframe 嵌入
     'X-Content-Type-Options' => 'nosniff', // 防止MIME类型混淆攻击
-    'X-XSS-Protection' => '1; mode=block', // 启用XSS过滤
-    'Content-Security-Policy' => "default-src 'self'; 
-                                 script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
-                                 style-src 'self' 'unsafe-inline';
-                                 font-src 'self' data: *;", // 内容安全策略
-    'Referrer-Policy' => 'strict-origin-when-cross-origin', // 引用策略
-    'Permissions-Policy' => 'geolocation=(), microphone=(), camera=()' // 权限策略
+    // 'X-XSS-Protection' => '1; mode=block', // 已禁用，现代浏览器已弃用此头
+    // 'Content-Security-Policy' 已禁用，避免限制过严
+    'Referrer-Policy' => 'no-referrer-when-downgrade', // 放宽引用策略
 );
 
 // 设置安全响应头

@@ -20,10 +20,8 @@ if (isset($_GET['logout'])) {
 	$values = [
 		'cookies' => ''
 	];
-	// 更新条件  
-	$where = 'username = "' . $subconf['username'] . '"';
-	// 执行更新操作  
-	$affectedRows = $DB->update($table, $values, $where);
+	// 执行更新操作（使用参数化查询）
+	$affectedRows = $DB->updateV2($table, $values, 'username = ?', [$subconf['username']]);
 	// 生成新的session id防止会话固定攻击
 	session_regenerate_id(true);
 	setcookie("sub_admin_token", "", time() - 604800);
@@ -126,11 +124,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 					'cookies' => $cookies
 				];
 
-				// 更新条件  
-				$where = 'username = "' . $row['username'] . '"';
-
-				// 执行更新操作  
-				$affectedRows = $DB->update($table, $values, $where);
+				// 执行更新操作（使用参数化查询）
+				$affectedRows = $DB->updateV2($table, $values, 'username = ?', [$row['username']]);
 
 				WriteLog("登录日志", "登录成功", $user, $DB);
 				$json = ["code" => "1", "msg" => "登录成功,欢迎您使用本系统！"];
@@ -161,7 +156,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta http-equiv="X-Content-Type-Options" content="nosniff">
-	<meta http-equiv="X-Frame-Options" content="DENY">
+	<!-- <meta http-equiv="X-Frame-Options" content="DENY"> 已禁用，允许 iframe 嵌入 -->
 	<title><?php echo htmlspecialchars($subconf['hostname']) ?>后台登录</title>
 	<?php include("foot.php"); ?>
 	<link rel="stylesheet" href="../assets/layui/css/logon.css">

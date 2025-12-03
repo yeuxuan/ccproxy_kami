@@ -68,13 +68,16 @@ function webscan_StopAttack($key, $value, $attack_type, $method)
         // 检查现代攻击特征
         foreach ($modern_attack_patterns as $pattern_type => $patterns) {
             foreach ($patterns as $pattern) {
+                // 转义模式中的 ~ 字符，使用 ~ 作为分隔符避免与模式中的 / 冲突
+                $safePattern = str_replace('~', '\~', $pattern);
+                
                 // 确保正则表达式有效
-                if (preg_match("/$pattern/is", '') === false) {
+                if (@preg_match("~{$safePattern}~is", '') === false) {
                     error_log("Invalid regex pattern: $pattern");
                     continue;
                 }
 
-                if (preg_match("/$pattern/is", $value) || preg_match("/$pattern/is", $key)) {
+                if (@preg_match("~{$safePattern}~is", $value) || @preg_match("~{$safePattern}~is", $key)) {
                     $attack_info = [
                         'ip' => filter_var($_SERVER["REMOTE_ADDR"], FILTER_VALIDATE_IP),
                         'time' => date('Y-m-d H:i:s'),
@@ -463,8 +466,28 @@ if ($webscan_switch && webscan_white($webscan_white_directory, $webscan_white_ur
 
         // HTTP头检查
         if ($webscan_headers) {
+            // 白名单：排除浏览器自动生成的标准 HTTP Headers
+            // 这些 headers 是协议规定的格式，用户无法直接注入恶意内容
+            $skip_headers = [
+                'HTTP_COOKIE',                      // 已在 Cookie 检查中逐个检测
+                'HTTP_USER_AGENT',                  // 浏览器标识，包含版本号如 "NT 10.0" 是正常的
+                'HTTP_ACCEPT',                      // 浏览器接受的 MIME 类型，包含分号和斜杠是正常的
+                'HTTP_ACCEPT_LANGUAGE',             // 语言偏好
+                'HTTP_ACCEPT_ENCODING',             // 编码偏好（如 gzip, deflate）
+                'HTTP_CONNECTION',                  // 连接类型
+                'HTTP_HOST',                        // 目标主机
+                'HTTP_CACHE_CONTROL',               // 缓存控制
+                'HTTP_UPGRADE_INSECURE_REQUESTS',   // 升级请求标志
+                'HTTP_SEC_FETCH_SITE',              // Fetch Metadata
+                'HTTP_SEC_FETCH_MODE',
+                'HTTP_SEC_FETCH_USER',
+                'HTTP_SEC_FETCH_DEST',
+                'HTTP_SEC_CH_UA',                   // Client Hints
+                'HTTP_SEC_CH_UA_MOBILE',
+                'HTTP_SEC_CH_UA_PLATFORM',
+            ];
             foreach ($_SERVER as $key => $value) {
-                if (is_string($key) && stripos($key, 'HTTP_') === 0) {
+                if (is_string($key) && stripos($key, 'HTTP_') === 0 && !in_array($key, $skip_headers)) {
                     webscan_StopAttack($key, $value, 'header', "HEADER");
                 }
             }

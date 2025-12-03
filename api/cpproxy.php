@@ -68,8 +68,7 @@ function checkquery($DB)
         $appCacheKey = 'app_' . $appcode;
         $ip = $cache->get($appCacheKey);
         if ($ip === null) {
-
-            $ip = $DB->selectRow("SELECT serverip FROM application WHERE appcode = '" . $appcode . "'");
+            $ip = $DB->selectRowV2("SELECT serverip FROM application WHERE appcode = ?", [$appcode]);
             if ($ip) {
                 $cache->set($appCacheKey, $ip, 3600);
             }
@@ -84,7 +83,7 @@ function checkquery($DB)
         $server = $cache->get($serverCacheKey);
         
         if ($server === null) {
-            $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $ip['serverip'] . "'");
+            $server = $DB->selectRowV2("select ip,serveruser,password,cport from server_list where ip = ?", [$ip['serverip']]);
             if ($server) {
                 $cache->set($serverCacheKey, $server, 3600); // 缓存1小时
             }
@@ -130,7 +129,7 @@ function checkinsert($DB)
         $code = htmlspecialchars(trim($_POST["code"]));
 
         // 验证卡密
-        $kami = $DB->selectRow("select count(*) as num,app,times,state,ext from kami where kami='" . $code . "' GROUP BY app,times,state,ext");
+        $kami = $DB->selectRowV2("select count(*) as num,app,times,state,ext from kami where kami = ? GROUP BY app,times,state,ext", [$code]);
 
         if (!$kami || $kami['num'] <= 0) {
             return array("code" => -2, "msg" => "卡密不存在");
@@ -141,13 +140,13 @@ function checkinsert($DB)
         }
 
         // 获取服务器信息
-        $ip = $DB->selectRow("select serverip from application where appcode='" . $kami['app'] . "'");
+        $ip = $DB->selectRowV2("select serverip from application where appcode = ?", [$kami['app']]);
 
         if (!$ip) {
             return array("code" => -1, "msg" => "应用不存在");
         }
 
-        $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $ip['serverip'] . "'"); //$ip['serverip']服务器IP
+        $server = $DB->selectRowV2("select ip,serveruser,password,cport from server_list where ip = ?", [$ip['serverip']]); //$ip['serverip']服务器IP
         if (!$server) {
             return array("code" => -1, "msg" => "服务器配置不存在");
         }
@@ -190,7 +189,7 @@ function checkinsert($DB)
                 'end_date' => $endDate
             ];
 
-            $DB->update('kami', $updateData, "kami = '".$code."'");
+            $DB->updateV2('kami', $updateData, "kami = ?", [$code]);
             
             return array("code" => 1, "msg" => $msg["code"]);
         }
@@ -219,7 +218,7 @@ function checkupdate($DB)
         $code = htmlspecialchars(trim($_POST["code"]));
 
         // 验证卡密
-        $kami = $DB->selectRow("select count(*) as num,app,times,state,ext from kami where kami='" . $code . "' GROUP BY app,times,state,ext");
+        $kami = $DB->selectRowV2("select count(*) as num,app,times,state,ext from kami where kami = ? GROUP BY app,times,state,ext", [$code]);
 
         if (!$kami || $kami['num'] <= 0) {
             return array("code" => -2, "msg" => "卡密不存在");
@@ -230,8 +229,8 @@ function checkupdate($DB)
         }
 
         // 获取服务器信息
-        $ip = $DB->selectRow("select serverip from application where appcode='" . $kami['app'] . "'");
-        $server = $DB->selectRow("select ip,serveruser,password,cport from server_list where ip='" . $ip['serverip'] . "'"); //$ip['serverip']服务器IP
+        $ip = $DB->selectRowV2("select serverip from application where appcode = ?", [$kami['app']]);
+        $server = $DB->selectRowV2("select ip,serveruser,password,cport from server_list where ip = ?", [$ip['serverip']]); //$ip['serverip']服务器IP
         $cache = Cache::getInstance();
         $cache->clear();
         // 验证用户存在性
@@ -277,7 +276,7 @@ function checkupdate($DB)
                 'use_date' => $currentDate,
                 'end_date' => $endDate
             );
-            $DB->update('kami', $updateData, "kami='" . $code . "'");
+            $DB->updateV2('kami', $updateData, "kami = ?", [$code]);
 
             return array("code" => 1, "msg" => $updateResult);
         }

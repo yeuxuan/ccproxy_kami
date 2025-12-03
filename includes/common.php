@@ -17,10 +17,11 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
 });
 
 try {
-    header("X-Frame-Options: DENY");
-    header("X-XSS-Protection: 1; mode=block");
+    // 安全响应头（已放宽限制，允许 iframe 嵌入）
+    // header("X-Frame-Options: DENY");  // 已禁用
+    // header("X-XSS-Protection: 1; mode=block");  // 已禁用（现代浏览器已弃用）
     header("X-Content-Type-Options: nosniff");
-    header("Referrer-Policy: strict-origin-when-cross-origin");
+    // header("Referrer-Policy: strict-origin-when-cross-origin");  // 已禁用
     if($_SERVER['SERVER_PORT'] == '443') {
         header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
     }
@@ -99,7 +100,7 @@ try {
     include_once SYSTEM_ROOT . 'dbhelp.php';
     $DB= new SpringMySQLi($dbconfig['host'], $dbconfig['user'], $dbconfig['pwd'], $dbconfig['dbname']); 
     $sql = 'SELECT * FROM `sub_admin`';
-    $count = $DB->select($sql) ?: array();
+    $count = $DB->selectV2($sql, []) ?: array();
     $installcheck=count($count)>0?true:false;
     if ($installcheck == false) {
         @header('Content-Type: text/html; charset=UTF-8');
@@ -129,7 +130,7 @@ try {
 
     $host = htmlspecialchars($_SERVER['HTTP_HOST'], ENT_QUOTES, 'UTF-8');
 
-    $subconf = $DB->selectRow('SELECT * FROM sub_admin WHERE siteurl = "'.$host.'" limit 1');
+    $subconf = $DB->selectRowV2('SELECT * FROM sub_admin WHERE siteurl = ?', [$host]);
 
     if($subconf==NULL) {
         sysmsg('<h2>您的站点没有绑定(只能绑定一个域名),请联系管理员，或者手动修改数据库表sub_admin的siteurl字段改成<b style="color:red;">'.$_SERVER['HTTP_HOST'].'</b><br/>', true);
